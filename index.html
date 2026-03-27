@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PDEU Physics — Neutron Stars</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#03030f;--bg1:#07071a;--bg2:#0c0c24;--bg3:#11112e;
+  --card:#0e0e26;--card2:#13133a;
+  --b1:rgba(99,102,241,0.15);--b2:rgba(99,102,241,0.28);--b3:rgba(99,102,241,0.45);
+  --p:#818cf8;--p2:#a5b4fc;--p3:#c7d2fe;
+  --s:#34d399;--s2:#6ee7b7;
+  --a:#f472b6;--a2:#f9a8d4;
+  --w:#fbbf24;--w2:#fde68a;
+  --r:#f87171;
+  --t1:#f1f5f9;--t2:#94a3b8;--t3:#475569;--t4:#1e293b;
+  --gp:rgba(129,140,248,0.12);--gs:rgba(52,211,153,0.1);
+  --font-display:'Orbitron',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+html,body,#root{background:var(--bg);color:var(--t1);font-family:var(--font-body);min-height:100vh}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:4px}
+button{cursor:pointer;font-family:var(--font-body)}
+input,textarea,select{font-family:var(--font-mono)}
+a{color:inherit;text-decoration:none}
+@keyframes orbit{from{transform:rotate(0deg) translateX(140px) rotate(0deg)}to{transform:rotate(360deg) translateX(140px) rotate(-360deg)}}
+@keyframes pulse-ring{0%{transform:scale(1);opacity:0.6}100%{transform:scale(1.8);opacity:0}}
+@keyframes float-up{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes scanline{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes bounce3{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.anim-fadeInUp{animation:fadeInUp 0.3s ease forwards}
+.anim-fadeIn{animation:fadeIn 0.25s ease forwards}
+.mono{font-family:var(--font-mono)}
+.display{font-family:var(--font-display)}
+.glow-p{box-shadow:0 0 20px rgba(129,140,248,0.3)}
+.card{background:var(--card);border:1px solid var(--b1);border-radius:20px;transition:border-color 0.2s}
+.card:hover{border-color:var(--b2)}
+.card2{background:var(--card2);border:1px solid var(--b2);border-radius:16px}
+.btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 22px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--p),#6366f1);color:#fff;font-weight:600;font-size:13px;transition:all 0.2s;box-shadow:0 4px 20px rgba(129,140,248,0.25)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(129,140,248,0.4)}
+.btn-primary:active{transform:scale(0.97)}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 22px;border-radius:12px;border:1px solid var(--b2);background:transparent;color:var(--t2);font-weight:600;font-size:13px;transition:all 0.2s}
+.btn-secondary:hover{color:var(--t1);border-color:var(--p);background:var(--gp)}
+.btn-secondary:disabled{opacity:0.4;cursor:not-allowed}
+.btn-icon{width:36px;height:36px;border-radius:10px;border:1px solid var(--b1);background:transparent;display:flex;align-items:center;justify-content:center;color:var(--t2);transition:all 0.2s}
+.btn-icon:hover{color:var(--t1);border-color:var(--b2);background:var(--gp)}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
+.inp{width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--b1);border-radius:12px;color:var(--t1);font-size:13px;outline:none;transition:border-color 0.2s}
+.inp:focus{border-color:var(--p)}
+.inp::placeholder{color:var(--t3)}
+.ta{width:100%;min-height:90px;padding:12px 14px;background:var(--bg2);border:1px solid var(--b1);border-radius:12px;color:var(--t1);font-size:12px;outline:none;resize:vertical;transition:border-color 0.2s}
+.ta:focus{border-color:var(--p)}
+.ta::placeholder{color:var(--t3)}
+.progress-track{height:6px;background:var(--b1);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width 0.6s cubic-bezier(0.4,0,0.2,1)}
+.tab-bar{display:flex;gap:4px;padding:5px;background:rgba(255,255,255,0.03);border:1px solid var(--b1);border-radius:14px;width:fit-content}
+.tab-item{display:flex;align-items:center;gap:7px;padding:9px 18px;border-radius:10px;border:1px solid transparent;background:transparent;color:var(--t2);font-size:13px;font-weight:600;transition:all 0.2s}
+.tab-item:hover{color:var(--t1);background:rgba(255,255,255,0.04)}
+.tab-item.active{background:var(--card2);color:var(--t1);border-color:var(--b2);box-shadow:0 0 16px var(--gp)}
+.metric-box{padding:14px 16px;background:rgba(255,255,255,0.02);transition:background 0.2s}
+.metric-box:hover{background:rgba(255,255,255,0.04)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--p);display:inline-block;animation:bounce3 1.4s ease-in-out infinite}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:var(--b2);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--p);cursor:pointer;transition:box-shadow 0.2s}
+input[type=range]::-webkit-slider-thumb:hover{box-shadow:0 0 0 6px rgba(129,140,248,0.2)}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(transparent,rgba(129,140,248,0.06),transparent);animation:scanline 8s linear infinite;pointer-events:none;z-index:0}
+.yt-wrap{position:relative;width:100%;padding-top:56.25%;border-radius:14px;overflow:hidden;background:#000}
+.yt-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+.hover-card{transition:transform 0.25s,box-shadow 0.25s}
+.hover-card:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,0.5)}
+.section-title{font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:0.02em;color:var(--t1)}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:0.04em}
+.dot-live{width:8px;height:8px;border-radius:50%;background:var(--s);box-shadow:0 0 8px var(--s);animation:blink 2s ease-in-out infinite;display:inline-block}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+/* ─── API KEY STATE ─── */
+let _apiKey = '';
+const getApiKey = () => _apiKey;
+const setApiKey = (k) => { _apiKey = k; };
+
+/* ─── MOTION POLYFILL (replaces framer-motion) ─── */
+const motion = new Proxy({}, {
+  get: (_, tag) => ({ children, initial, animate, exit, transition, whileHover, whileTap, className='', ...props }) =>
+    React.createElement(tag, { ...props, className: `anim-fadeInUp ${className}`, style: { ...(props.style||{}), transition:'all 0.25s' } }, children)
+});
+const AnimatePresence = ({ children }) => <>{children}</>;
+
+/* ─── SVG ICONS ─── */
+const Ic = ({ path, size=16, c='currentColor', sw=2, fill='none' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke={c} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
+    {Array.isArray(path) ? path.map((p,i)=><path key={i} d={p}/>) : <path d={path}/>}
+  </svg>
+);
+const Icons = {
+  brain: p=><Ic {...p} path={["M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z","M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z","M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"]}/>,
+  zap:   p=><Ic {...p} path="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>,
+  award: p=><Ic {...p} path={["M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"]}/>,
+  book:  p=><Ic {...p} path={["M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z","M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"]}/>,
+  play:  p=><Ic {...p} fill={p.c||'currentColor'} stroke="none" path="M5 3l14 9-14 9V3z"/>,
+  check: p=><Ic {...p} path="M20 6L9 17l-5-5"/>,
+  lock:  p=><Ic {...p} path={["M18 11H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2z","M7 11V7a5 5 0 0 1 10 0v4"]}/>,
+  chev_r:p=><Ic {...p} path="m9 18 6-6-6-6"/>,
+  chev_l:p=><Ic {...p} path="m15 18-6-6 6-6"/>,
+  x:     p=><Ic {...p} path={["M18 6 6 18","M6 6l12 12"]}/>,
+  send:  p=><Ic {...p} path={["m22 2-7 20-4-9-9-4z","m22 2-11 11"]}/>,
+  flask: p=><Ic {...p} path={["M9 3h6","M10 3v6l-4.5 9a1 1 0 0 0 .9 1.5h11.2a1 1 0 0 0 .9-1.5L14 9V3"]}/>,
+  file:  p=><Ic {...p} path={["M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z","M14 2v6h6","M16 13H8","M16 17H8","M10 9H8"]}/>,
+  upload:p=><Ic {...p} path={["M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4","M17 8l-5-5-5 5","M12 3v12"]}/>,
+  download:p=><Ic {...p} path={["M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4","M7 10l5 5 5-5","M12 15V3"]}/>,
+  user:  p=><Ic {...p} path={["M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2","M12 7a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"]}/>,
+  spark: p=><Ic {...p} path="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>,
+  refresh:p=><Ic {...p} path={["M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8","M21 3v5h-5","M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16","M8 16H3v5"]}/>,
+  info:  p=><Ic {...p} path={["M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z","M12 8h.01","M12 12v4"]}/>,
+  target:p=><Ic {...p} path={["M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z","M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12z","M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"]}/>,
+  star:  p=><Ic {...p} path="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>,
+  yt:    p=><Ic {...p} fill="rgba(255,0,0,0.8)" stroke="none" path={["M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z","M9.75 15.02l5.75-3.02-5.75-3.02v6.04z"]}/>,
+  msg:   p=><Ic {...p} path="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>,
+  trend: p=><Ic {...p} path={["M22 7 13.5 15.5 8.5 10.5 2 17","M16 7h6v6"]}/>,
+  atom:  p=><Ic {...p} path={["M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0","M12 12m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0","M3.6 9h16.8","M3.6 15h16.8"]}/>,
+  wave:  p=><Ic {...p} path="M2 12 Q5 6 8 12 Q11 18 14 12 Q17 6 20 12 Q21.5 15 22 12"/>,
+  rocket:p=><Ic {...p} path={["M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z","M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z","M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0","M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"]}/>,
+  key:   p=><Ic {...p} path={["M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"]}/>,
+};
+
+/* ─── HELPERS ─── */
+const callClaude = async (messages, system, maxTokens=1500) => {
+  const key = getApiKey();
+  if (!key) throw new Error('NO_KEY');
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
+    body:JSON.stringify({ model:'claude-sonnet-4-5', max_tokens:maxTokens, system, messages })
+  });
+  if (!res.ok) { const e=await res.json().catch(()=>{}); throw new Error(e?.error?.message||`API ${res.status}`); }
+  const d = await res.json();
+  return d.content?.find(b=>b.type==='text')?.text||'';
+};
+
+const MD = ({ text }) => {
+  if (!text) return null;
+  return <span>{text.split('\n').map((line,i,arr)=>{
+    let html = line
+      .replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--p2)">$1</strong>')
+      .replace(/\*(.*?)\*/g,'<em>$1</em>')
+      .replace(/`(.*?)`/g,'<code style="background:rgba(129,140,248,0.15);padding:1px 6px;border-radius:4px;font-size:11px;font-family:var(--font-mono)">$1</code>');
+    return <span key={i} dangerouslySetInnerHTML={{__html: html+(i<arr.length-1?'<br/>':'')}}/>;
+  })}</span>;
+};
+
+/* ─── API KEY MODAL ─── */
+const ApiKeyModal = ({ onSet }) => {
+  const [val,setVal]=useState('');
+  return (
+    <div style={{position:'fixed',inset:0,background:'rgba(3,3,15,0.96)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999,padding:20}}>
+      <div style={{background:'var(--card)',border:'1px solid var(--b2)',borderRadius:24,padding:36,maxWidth:480,width:'100%',textAlign:'center'}}>
+        <div style={{fontSize:48,marginBottom:16}}>⭐</div>
+        <p style={{fontFamily:'var(--font-display)',fontSize:20,fontWeight:900,marginBottom:8}}>PDEU Physics — Neutron Stars</p>
+        <p style={{fontSize:13,color:'var(--t2)',marginBottom:24,lineHeight:1.6}}>This app uses the Claude AI API for AI study notes, assessments, and the NeutronMind chatbot. Enter your Anthropic API key to unlock all features.<br/><br/><span style={{fontSize:11,color:'var(--t3)'}}>Your key stays in your browser and is never stored anywhere.</span></p>
+        <input className="inp" value={val} onChange={e=>setVal(e.target.value)} onKeyDown={e=>e.key==='Enter'&&val.trim()&&onSet(val.trim())} placeholder="sk-ant-..." style={{marginBottom:12}}/>
+        <div style={{display:'flex',gap:10}}>
+          <button className="btn-primary" style={{flex:1}} onClick={()=>val.trim()&&onSet(val.trim())}><Icons.key size={14} c="#fff"/> Unlock App</button>
+          <button className="btn-secondary" style={{flex:1}} onClick={()=>onSet('DEMO')}>Browse (no AI features)</button>
+        </div>
+        <p style={{fontSize:10,color:'var(--t3)',marginTop:14}}>Get a free API key at console.anthropic.com</p>
+      </div>
+    </div>
+  );
+};
+
+/* ─── STAR FIELD ─── */
+const StarField = () => {
+  const ref = useRef(null);
+  useEffect(()=>{
+    const c=ref.current; if(!c)return;
+    const ctx=c.getContext('2d');
+    c.width=window.innerWidth; c.height=window.innerHeight;
+    const stars=Array.from({length:180},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.2+0.3,a:Math.random(),speed:Math.random()*0.3+0.05}));
+    let frame;
+    const draw=(t)=>{
+      ctx.clearRect(0,0,c.width,c.height);
+      stars.forEach(s=>{
+        s.a=0.4+Math.sin(t*s.speed*0.001+s.x)*0.4;
+        ctx.globalAlpha=s.a; ctx.fillStyle='#fff';
+        ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
+      });
+      ctx.globalAlpha=1;
+      frame=requestAnimationFrame(draw);
+    };
+    frame=requestAnimationFrame(draw);
+    return ()=>cancelAnimationFrame(frame);
+  },[]);
+  return <canvas ref={ref} style={{position:'fixed',inset:0,zIndex:0,pointerEvents:'none',opacity:0.7}}/>;
+};
+
+/* ─── DATA ─── */
+const MODULES = [
+  {id:'ns-basics',tier:1,title:'What is a Neutron Star?',emoji:'⭐',desc:'How massive stars die and leave behind the densest objects in the universe',xp:100,mins:12,prereqs:[],
+   topics:['Stellar evolution','Core collapse supernova','Neutron star formation','Basic properties'],
+   ytVideos:[{id:'RrMvUL8HFlM',title:'Neutron Stars – The Most Extreme Objects',channel:'Kurzgesagt'},{id:'udFxKZRyQt4',title:'What Is A Neutron Star?',channel:'SciShow Space'}],
+   summary:"A neutron star forms when a massive star (8–20 solar masses) exhausts its nuclear fuel. The iron core collapses in under a second, reaching nuclear density. Electron degeneracy pressure fails; neutron degeneracy pressure and repulsive nuclear forces halt the collapse at ~10–12 km radius. The outer layers bounce and explode as a supernova. What remains: an object of 1.2–2.5 solar masses compressed to city-size, with surface gravity 200 billion times Earth's.",
+   keyFacts:['Density: 10¹⁷ kg/m³ (like fitting the Sun in a city)','Radius: 10–14 km','Mass: 1.2–2.5 M☉','Temperature at birth: 10¹¹ K','Surface gravity: ~2×10¹¹ m/s²'],
+   assessQ:'Explain the sequence of events in neutron star formation, from core collapse to stable neutron star. Why does the collapse stop?'},
+  {id:'ns-density',tier:1,title:'Extreme Density & Nuclear Matter',emoji:'⚛️',desc:'Matter at supranuclear densities — beyond anything on Earth',xp:120,mins:14,prereqs:['ns-basics'],
+   topics:['Nuclear degeneracy pressure','Pauli exclusion principle','Supranuclear matter','Nuclear saturation density'],
+   ytVideos:[{id:'S0tNBUXqOWo',title:'Neutron Star Interior',channel:'PBS Space Time'},{id:'V-RkieVMO_E',title:'Nuclear Physics of Neutron Stars',channel:'Physics Explained'}],
+   summary:"At neutron star densities (ρ > 2.3×10¹⁴ g/cm³), matter behaves unlike anything in terrestrial labs. The outer crust contains neutron-rich nuclei in a sea of electrons. The inner crust has free neutrons that may form a superfluid. The outer core is dominated by neutrons with a few percent protons, electrons, muons. The deep core — largely unknown — may contain hyperons, kaon condensates, or even quark-gluon plasma.",
+   keyFacts:['Nuclear saturation density: 2.3×10¹⁴ g/cm³','NS core reaches 2–10× nuclear density','Neutron superfluidity causes glitches in pulsars','Proton fraction ~5% affects neutrino cooling','Deep core composition: still an open question'],
+   assessQ:'Why does neutron degeneracy pressure halt the collapse of a neutron star? Describe the role of the Pauli exclusion principle.'},
+  {id:'pulsars',tier:2,title:'Pulsars: Cosmic Lighthouses',emoji:'🔦',desc:'The most precise natural clocks in the universe',xp:150,mins:15,prereqs:['ns-basics'],
+   topics:['Rotation-powered pulsars','Magnetosphere','Pulse timing','Millisecond pulsars'],
+   ytVideos:[{id:'D6PdJq_0CpA',title:"Pulsars - The Universe's Most Precise Clocks",channel:'Cool Worlds'},{id:'p9NhGqNQqA8',title:'Millisecond Pulsars Explained',channel:'PBS Space Time'}],
+   summary:"Pulsars are rotating neutron stars emitting beams of electromagnetic radiation along their magnetic poles. The Crab Pulsar (33 ms period) is just 970 years old. Millisecond pulsars (MSPs, P < 30 ms) are 'recycled' — spun up by accreting matter from a companion. PSR J1748-2446ad spins at 716 Hz. Pulsar timing arrays (PTAs) use arrays of MSPs as gravitational wave detectors.",
+   keyFacts:['First pulsar (PSR B1919+21) discovered 1967 by Jocelyn Bell','Fastest: PSR J1748-2446ad at 716 rotations/sec','Timing precision rivals atomic clocks (δt < 100 ns)','Crab Pulsar slows by 38 ns/day','PTAs detected nanohertz GW background in 2023'],
+   assessQ:'Describe the pulsar lighthouse model. Why do millisecond pulsars spin so much faster than normal pulsars?'},
+  {id:'magnetars',tier:2,title:'Magnetars & Extreme Magnetism',emoji:'🧲',desc:'Strongest magnetic fields in the observable universe',xp:140,mins:13,prereqs:['ns-basics','ns-density'],
+   topics:['Magnetar formation','Soft gamma repeaters','Giant flares','Magnetic energy reservoir'],
+   ytVideos:[{id:'pSoTcDndyYw',title:'Magnetars - The Most Dangerous Objects',channel:'Kurzgesagt'},{id:'Z8CaHi1OFLY',title:'What Are Magnetars?',channel:'SciShow Space'}],
+   summary:"Magnetars have surface magnetic fields of 10¹³–10¹⁵ Gauss — a trillion times Earth's field. SGR 1806-20's 2004 giant flare released more energy in 0.2 seconds than the Sun emits in 250,000 years. The field decays over thousands of years, powering X-ray emission through magnetic reconnection. About 30 magnetars are known.",
+   keyFacts:['B-field: 10¹³–10¹⁵ Gauss (10⁹–10¹¹ Tesla)','SGR 1806-20 giant flare: 2×10⁴⁶ ergs in 0.2 s','~30 confirmed magnetars known','Field decay timescale: ~10,000 years','FRB 200428 linked to magnetar SGR 1935+2154'],
+   assessQ:'Compare a magnetar to a standard radio pulsar. What physical mechanisms power their emission?'},
+  {id:'eos',tier:3,title:'Equation of State',emoji:'📐',desc:'The deepest mystery in dense matter physics',xp:200,mins:18,prereqs:['ns-density','pulsars'],
+   topics:['EOS candidates','Mass-radius relation','NICER observations','Nuclear theory vs observation'],
+   ytVideos:[{id:'DjD_QpIZz5E',title:"What's Inside a Neutron Star? The EOS",channel:'PBS Space Time'},{id:'VNQKZqIMU10',title:'NICER Mission Results Explained',channel:'NASA Goddard'}],
+   summary:"The Equation of State (EOS) relates pressure to density in dense matter — and is completely unknown above ~2× nuclear density. NICER (Neutron star Interior Composition Explorer) on the ISS measures X-ray pulse profiles to map hot spots, constraining R to ±0.5 km. J0740+6620 (2.08 M☉) rules out very soft EOS.",
+   keyFacts:['NICER: launched 2017, measures R to ±0.5 km','J0740+6620: 2.08 ± 0.07 M☉ (hard EOS required)','J0952-0607: 2.35 M☉ — challenges quark matter models','Tidal deformability from GW170817: Λ < 800','Radius constraint: 11.9 ± 1.4 km for 1.4 M☉'],
+   assessQ:'Explain why the neutron star equation of state is so difficult to determine. What do NICER and gravitational wave observations each contribute?'},
+  {id:'grav-waves',tier:3,title:'Gravitational Waves from NS Mergers',emoji:'🌊',desc:'GW170817 — the gold standard of multi-messenger astronomy',xp:180,mins:16,prereqs:['pulsars','ns-density'],
+   topics:['Binary neutron star inspiral','GW170817','Kilonova','r-process nucleosynthesis','Hubble constant'],
+   ytVideos:[{id:'iphcyNWFD10',title:'GW170817: Neutron Star Merger Detected',channel:'LIGO'},{id:'S0tNBUXqOWo',title:'Kilonovae and the Origin of Gold',channel:'PBS Space Time'}],
+   summary:"On August 17, 2017, LIGO/Virgo detected GW170817 — the first binary neutron star merger. Simultaneously, Fermi detected a short GRB 170817A 1.7 seconds later. The kilonova AT2017gfo confirmed NS mergers as the origin of heavy elements (gold, platinum, uranium).",
+   keyFacts:['GW170817: first BNS merger in GW + EM','Chirp mass: 1.188 M☉; total mass ~2.74 M☉','Kilonova peak: ~10⁴¹ ergs/s, blue then red','r-process yield: ~0.01–0.05 M☉ per event','LIGO A+ sensitivity: detect BNS to 300 Mpc'],
+   assessQ:'What makes GW170817 a landmark event? Describe what was detected, by which instruments, and what each observation independently revealed.'},
+  {id:'xray-binaries',tier:3,title:'X-ray Binaries & Accretion',emoji:'☢️',desc:'Neutron stars as cosmic engines powered by infalling matter',xp:160,mins:14,prereqs:['pulsars','magnetars'],
+   topics:['Roche lobe overflow','Accretion disk','Type I X-ray bursts','Z and atoll sources'],
+   ytVideos:[{id:'E6_-OY9yJAo',title:'X-ray Binaries Explained',channel:'PBS Space Time'},{id:'e-A_NNMKP2c',title:'Neutron Star Accretion Physics',channel:'Crash Course Astronomy'}],
+   summary:"In X-ray binaries, a neutron star accretes hydrogen-rich matter from a companion via Roche lobe overflow, forming a hot accretion disk (T > 10⁷ K). The accreted layer ignites thermonuclear burning when it reaches ~10⁸ K — producing Type I X-ray bursts visible from 10 kpc away. Sco X-1 was the first X-ray source found beyond the Sun.",
+   keyFacts:['Sco X-1: discovered 1962 by Riccardo Giacconi (Nobel 2002)','Type I bursts: 10³⁷–10³⁸ ergs/s, recurrence 1–6 hours','Eddington limit: L_Edd ≈ 2×10³⁸ ergs/s','Accretion disk inner edge: ~ISCO (6GM/c² for NS)','Cyclotron resonance scattering: direct B-field measurement'],
+   assessQ:'Describe the physics of Type I X-ray bursts. What determines the burst recurrence timescale?'},
+  {id:'dark-matter',tier:4,title:'Neutron Stars & Dark Matter',emoji:'🌑',desc:'Using the densest objects as DM probes and detectors',xp:250,mins:20,prereqs:['eos','grav-waves'],
+   topics:['DM capture in NS','NS heating by DM','Dark matter admixed NS','Constraints on DM-nucleon cross-section'],
+   ytVideos:[{id:'FDnRTbhvGyo',title:'Neutron Stars as Dark Matter Detectors',channel:'PBS Space Time'},{id:'WLCbMF4nN4M',title:'Dark Matter and Dense Stars',channel:'Perimeter Institute'}],
+   summary:"Neutron stars in DM-dense regions capture dark matter particles via scattering off neutrons. Accumulated DM thermalizes and either: (a) annihilates, heating the NS to detectable temperatures; (b) forms a black hole if enough non-annihilating DM accumulates. Old cold NSs can constrain DM-nucleon cross-sections to σ < 10⁻⁴⁵ cm².",
+   keyFacts:['DM capture rate ∝ ρ_DM × σ_DM-n × N_n','Heating constraint: old NS T_obs < 10⁵ K near GC','BEC formation timescale: τ ∝ 1/ρ_DM','Fermionic DM: ~0.1% of mass can collapse NS to BH','Best target: old pulsars in globular clusters near GC'],
+   assessQ:'Explain how neutron stars can be used as dark matter detectors. What observational signature would indicate DM capture?'},
+  {id:'frontier',tier:4,title:'Open Problems & Frontiers',emoji:'🚀',desc:'The unsolved mysteries that will define the next decade',xp:300,mins:22,prereqs:['eos','xray-binaries','dark-matter'],
+   topics:['Fast radio bursts','Quark stars','NS cooling anomalies','Post-merger oscillations','MHD instabilities'],
+   ytVideos:[{id:'V-RkieVMO_E',title:'Fast Radio Bursts — What We Know',channel:'Event Horizon'},{id:'iphcyNWFD10',title:'The Future of Neutron Star Physics',channel:'Perimeter Institute'}],
+   summary:"The frontier questions: (1) What powers Fast Radio Bursts? (2) Do quark stars exist? HESS J1731-347 remnant at ~0.77 M☉ may be a quark star. (3) What is the post-merger fate of BNS coalescences? (4) Cooling anomaly: Cassiopeia A NS cooled 4% in 10 years. (5) What is the maximum NS mass?",
+   keyFacts:['FRB 200428: first FRB from known magnetar (April 2020)','CHIME: detects ~1000 FRBs/year','HESS J1731-347 remnant: 0.77 M☉ — possible quark star','Cas A cooling: 4% drop over 10 years (rapid cooling phase)','Next-gen: Einstein Telescope, LISA, ngVLA, SKA'],
+   assessQ:'Identify three major open questions in neutron star astrophysics. For each, describe current observations, competing models, and what future instrument could resolve the question.'},
+];
+const TIER_LABELS = {1:'Foundations',2:'Phenomena',3:'Frontiers',4:'Deep Theory'};
+const TIER_COLORS = {1:'var(--s)',2:'var(--p)',3:'var(--a)',4:'var(--w)'};
+const GUJARAT_COLLEGES = [
+  {name:'PDEU – Pandit Deendayal Energy University',short:'PDEU',city:'Gandhinagar',syllabus:'B.Tech Physics (NS specialization). Exam: 3h, 70 marks. Section A: 7×2=14, Section B: 4×7=28, Section C: 2×14=28.'},
+  {name:'Gujarat University',short:'GU',city:'Ahmedabad',syllabus:'M.Sc Physics. Exam: 3h, 100 marks. 10 short (20), 5 medium (35), 2 long (30), 1 optional (15).'},
+  {name:'Nirma University',short:'NU',city:'Ahmedabad',syllabus:'B.Tech/M.Tech. Exam: 3h, 70 marks. 20 MCQ (20), 5 short (20), 2 long (30).'},
+  {name:'Sardar Patel University',short:'SPU',city:'Vallabh Vidyanagar',syllabus:'M.Sc Physics. Exam: 2.5h, 70 marks. 7 questions of 10 marks, attempt 5.'},
+  {name:'MSU Baroda',short:'MSU',city:'Vadodara',syllabus:'M.Sc Astrophysics. Exam: 3h, 100 marks. Internal: 30, External: 70. Long descriptive answers.'},
+  {name:'DAIICT',short:'DAIICT',city:'Gandhinagar',syllabus:'Elective Physics. Exam: 2h, 50 marks. 5 questions × 10 marks. Problem-focused.'},
+  {name:'Silver Oak University',short:'SOU',city:'Ahmedabad',syllabus:'B.Sc Physics. Exam: 2.5h, 60 marks. 6 questions attempt 4.'},
+  {name:'Other (Custom)',short:'CUSTOM',city:'',syllabus:''},
+];
+const G_CONST=6.674e-11,C_LIGHT=3e8,M_SUN=1.989e30;
+const phys = {
+  rs: m=>2*G_CONST*m*M_SUN/(C_LIGHT*C_LIGHT)/1000,
+  compactness:(m,r)=>phys.rs(m)/r,
+  g_surface:(m,r)=>{const M=m*M_SUN,R=r*1000;return G_CONST*M/(R*R)/Math.sqrt(1-2*G_CONST*M/(R*C_LIGHT*C_LIGHT))},
+  v_esc:(m,r)=>Math.sqrt(2*G_CONST*m*M_SUN/(r*1000))/C_LIGHT,
+  kepler:(m,r)=>(1/(2*Math.PI))*Math.sqrt(G_CONST*m*M_SUN/Math.pow(r*1000,3)),
+  lum_sd:(spin,b,r)=>{const R=r*1000,omega=2*Math.PI*spin;return b*b*R*R*R*R*R*R*omega*omega*omega*omega/(6*C_LIGHT*C_LIGHT*C_LIGHT)},
+  stable:(m,r)=>{
+    if(r<phys.rs(m)*1.05)return{ok:false,msg:'💀 Below Schwarzschild radius — collapses to black hole'};
+    if(m>2.8)return{ok:false,msg:'💀 Exceeds absolute maximum mass — BH collapse inevitable'};
+    if(r<9)return{ok:false,msg:'⚠ Radius too small — causality violation risk'};
+    return{ok:true,msg:'Stable configuration'};
+  },
+  classify:(m,r,spin,b)=>{
+    if(!phys.stable(m,r).ok)return{type:'⚫ Black Hole',color:'#ff4500',glow:'rgba(255,69,0,0.4)'};
+    if(b>1e13&&spin<1)return{type:'🧲 Magnetar',color:'#f472b6',glow:'rgba(244,114,182,0.35)'};
+    if(spin>200)return{type:'⚡ Millisecond Pulsar',color:'#fbbf24',glow:'rgba(251,191,36,0.35)'};
+    if(spin>5)return{type:'🔦 Radio Pulsar',color:'#60a5fa',glow:'rgba(96,165,250,0.35)'};
+    if(m>2.0)return{type:'⚠ Ultra-Massive NS',color:'#f87171',glow:'rgba(248,113,113,0.35)'};
+    if(b>1e11)return{type:'📡 X-ray Pulsar',color:'#34d399',glow:'rgba(52,211,153,0.35)'};
+    return{type:'🌟 Neutron Star',color:'#a5b4fc',glow:'rgba(165,180,252,0.3)'};
+  }
+};
+const REAL_NS_DATA=[
+  {name:'Crab Pulsar (PSR B0531+21)',mass:1.44,radius:10.0,spin:29.7,b:3.8e12,note:'1054 AD supernova, iconic pulsar',year:'1968',dist:'2 kpc'},
+  {name:'J0740+6620',mass:2.08,radius:12.35,spin:346,b:2e9,note:'Most massive NS confirmed by Shapiro delay',year:'2019',dist:'1.01 kpc'},
+  {name:'SGR 1806-20 (Magnetar)',mass:1.4,radius:10.0,spin:0.13,b:2e15,note:'Strongest magnetar; 2004 giant flare',year:'1979',dist:'8.7 kpc'},
+  {name:'PSR J1748-2446ad',mass:1.35,radius:9.5,spin:716,b:1.5e8,note:'Fastest known pulsar (716 Hz)',year:'2004',dist:'5.5 kpc'},
+  {name:'Vela Pulsar (PSR J0835-4510)',mass:1.32,radius:10.4,spin:11.2,b:3.4e12,note:'Young energetic pulsar, large glitches',year:'1968',dist:'0.28 kpc'},
+  {name:'PSR J0952-0607',mass:2.35,radius:13.0,spin:707,b:8e7,note:'Currently most massive NS known (2.35 M☉)',year:'2022',dist:'3 kpc'},
+  {name:'HESS J1731-347 remnant',mass:0.77,radius:10.4,spin:0.01,b:1e13,note:'Possible quark star! Challenges NS EOS',year:'2022',dist:'2.5 kpc'},
+  {name:'GW170817 (post-merger)',mass:2.74,radius:11.9,spin:1,b:1e12,note:'First BNS merger detected in GW+EM',year:'2017',dist:'40 Mpc'},
+];
+const LIGO_DATA={
+  GW170817:{chirp:1.188,total:2.74,dist:40,H0:70,tidal:300,desc:'Binary neutron star merger — first ever GW+EM detection.'},
+  GW200115:{chirp:1.24,total:2.0,dist:300,H0:null,tidal:null,desc:'NSBH merger (neutron star + black hole).'},
+  GW190425:{chirp:1.44,total:3.4,dist:159,H0:null,tidal:600,desc:'High-mass BNS — no EM counterpart detected.'},
+};
+
+/* ─── CHATBOT ─── */
+const ChatBot = () => {
+  const [open,setOpen]=useState(false);
+  const [msgs,setMsgs]=useState([{role:'assistant',text:"Hi! I'm **NeutronMind** ⭐ — ask me anything about neutron stars, pulsars, magnetars, or your studies!\n\n*What are you curious about today?*"}]);
+  const [inp,setInp]=useState('');
+  const [loading,setLoading]=useState(false);
+  const [count,setCount]=useState(0);
+  const endRef=useRef(null);
+  const inpRef=useRef(null);
+  const FREE=12;
+  useEffect(()=>{endRef.current?.scrollIntoView({behavior:'smooth'})},[msgs,loading]);
+  useEffect(()=>{if(open)setTimeout(()=>inpRef.current?.focus(),300)},[open]);
+  const send=async()=>{
+    const t=inp.trim(); if(!t||loading||count>=FREE)return;
+    setInp(''); setLoading(true);
+    const newMsgs=[...msgs,{role:'user',text:t}];
+    setMsgs(newMsgs); setCount(c=>c+1);
+    try{
+      const api=newMsgs.map(m=>({role:m.role,content:m.text}));
+      const system=`You are NeutronMind — expert AI tutor for PDEU Physics specializing in neutron stars. Adapt to user level. Use **bold** for key terms. Keep responses under 200 words unless depth needed. Always end with an engaging follow-up question. Never fabricate specific numbers. Platform: PDEU Physics, Gandhinagar, Gujarat, India.`;
+      const reply=await callClaude(api,system);
+      setMsgs(p=>[...p,{role:'assistant',text:reply}]);
+    } catch(e) {
+      const msg=e.message==='NO_KEY'?'Please enter your API key to use NeutronMind.':'Connection error — please try again!';
+      setMsgs(p=>[...p,{role:'assistant',text:msg,err:true}]);
+    }
+    setLoading(false);
+  };
+  const left=FREE-count;
+  return <>
+    {open&&<div style={{position:'fixed',bottom:90,right:20,width:400,maxWidth:'calc(100vw - 2rem)',height:560,background:'var(--card)',border:'1px solid var(--b2)',borderRadius:20,boxShadow:'0 24px 80px rgba(0,0,0,0.7), 0 0 40px rgba(129,140,248,0.15)',display:'flex',flexDirection:'column',zIndex:9999,overflow:'hidden',animation:'fadeInUp 0.25s ease'}}>
+      <div style={{padding:'13px 16px',borderBottom:'1px solid var(--b1)',background:'linear-gradient(135deg,rgba(129,140,248,0.1),transparent)',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          <div style={{position:'relative'}}>
+            <div style={{width:36,height:36,borderRadius:10,background:'linear-gradient(135deg,var(--p),#6366f1)',display:'flex',alignItems:'center',justifyContent:'center'}}><Icons.brain size={18} c="#fff"/></div>
+            <span className="dot-live" style={{position:'absolute',bottom:-1,right:-1}}/>
+          </div>
+          <div><p style={{fontSize:13,fontWeight:700}}>NeutronMind AI</p><p style={{fontSize:10,color:'var(--t2)',fontFamily:'var(--font-mono)'}}>Claude-powered · Adaptive</p></div>
+        </div>
+        <div style={{display:'flex',gap:8,alignItems:'center'}}>
+          <span style={{fontSize:10,color:'var(--t3)',background:'rgba(255,255,255,0.05)',padding:'3px 8px',borderRadius:99,fontFamily:'var(--font-mono)'}}>{left} left</span>
+          <button className="btn-icon" onClick={()=>setOpen(false)} style={{width:28,height:28}}><Icons.x size={13}/></button>
+        </div>
+      </div>
+      <div style={{flex:1,overflowY:'auto',padding:14,display:'flex',flexDirection:'column',gap:10}}>
+        {msgs.map((m,i)=>(
+          <div key={i} style={{display:'flex',justifyContent:m.role==='user'?'flex-end':'flex-start',gap:8}}>
+            {m.role==='assistant'&&<div style={{width:26,height:26,borderRadius:7,background:'rgba(129,140,248,0.2)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:4}}><Icons.spark size={13} c="var(--p2)"/></div>}
+            <div style={{maxWidth:'83%',padding:'10px 13px',borderRadius:m.role==='user'?'16px 16px 4px 16px':'16px 16px 16px 4px',background:m.role==='user'?'linear-gradient(135deg,var(--p),#6366f1)':m.err?'rgba(248,113,113,0.1)':'var(--bg2)',border:m.role==='assistant'?'1px solid var(--b1)':'none',fontSize:13,lineHeight:1.6}}>
+              <MD text={m.text}/>
+            </div>
+          </div>
+        ))}
+        {loading&&<div style={{display:'flex',gap:8}}>
+          <div style={{width:26,height:26,borderRadius:7,background:'rgba(129,140,248,0.2)',display:'flex',alignItems:'center',justifyContent:'center'}}><Icons.spark size={13} c="var(--p2)"/></div>
+          <div style={{padding:'12px 16px',background:'var(--bg2)',border:'1px solid var(--b1)',borderRadius:'16px 16px 16px 4px',display:'flex',gap:5,alignItems:'center'}}>
+            {[0,160,320].map(d=><span key={d} className="dot" style={{animationDelay:`${d}ms`}}/>)}
+          </div>
+        </div>}
+        {count>=FREE&&<div style={{background:'linear-gradient(135deg,rgba(129,140,248,0.1),rgba(52,211,153,0.07))',border:'1px solid var(--b2)',borderRadius:12,padding:14,textAlign:'center'}}>
+          <Icons.lock size={24} c="var(--p)"/>
+          <p style={{fontSize:13,fontWeight:700,marginTop:8}}>Free limit reached</p>
+        </div>}
+        <div ref={endRef}/>
+      </div>
+      <div style={{padding:'11px 14px',borderTop:'1px solid var(--b1)',display:'flex',gap:8}}>
+        <input className="inp" ref={inpRef} value={inp} onChange={e=>setInp(e.target.value)} onKeyDown={e=>e.key==='Enter'&&send()} placeholder="Ask about neutron stars..." disabled={loading||count>=FREE} style={{height:40}}/>
+        <button onClick={send} disabled={loading||!inp.trim()||count>=FREE}
+          style={{width:40,height:40,flexShrink:0,borderRadius:10,border:'none',background:'linear-gradient(135deg,var(--p),#6366f1)',display:'flex',alignItems:'center',justifyContent:'center',opacity:(loading||!inp.trim()||count>=FREE)?0.4:1,transition:'all 0.2s',cursor:'pointer'}}>
+          <Icons.send size={15} c="#fff"/>
+        </button>
+      </div>
+    </div>}
+    <button onClick={()=>setOpen(!open)}
+      style={{position:'fixed',bottom:24,right:20,width:54,height:54,borderRadius:16,border:'none',background:'linear-gradient(135deg,var(--p),#6366f1)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999,boxShadow:'0 8px 32px rgba(129,140,248,0.45)',cursor:'pointer',transition:'transform 0.2s'}}
+      onMouseEnter={e=>e.currentTarget.style.transform='scale(1.08)'}
+      onMouseLeave={e=>e.currentTarget.style.transform='scale(1)'}>
+      {open?<Icons.x size={22} c="#fff"/>:<Icons.brain size={22} c="#fff"/>}
+    </button>
+  </>;
+};
+
+/* ─── MODULE PAGE ─── */
+const ModulePage = ({ module, onBack, onComplete, isCompleted, xpEarned }) => {
+  const [tab,setTab]=useState('learn');
+  const [activeVideo,setActiveVideo]=useState(0);
+  const [aiSummary,setAiSummary]=useState('');
+  const [summaryLoading,setSummaryLoading]=useState(false);
+  const [answer,setAnswer]=useState('');
+  const [result,setResult]=useState(null);
+  const [assessing,setAssessing]=useState(false);
+  const [deepDiveQ,setDeepDiveQ]=useState('');
+  const [deepDiveA,setDeepDiveA]=useState('');
+  const [deepDiveLoading,setDeepDiveLoading]=useState(false);
+
+  const generateSummary=async()=>{
+    setSummaryLoading(true);
+    try{
+      const sys=`You are an expert astrophysics educator. Generate a rich structured educational summary for PDEU Physics students using markdown:
+## Core Concept\n[2-3 sentence essence]\n## Key Physics\n[5-6 bullet points with equations/numbers]\n## The Story\n[Narrative paragraph]\n## Common Misconceptions\n[2-3 things students get wrong]\n## Exam-Ready Facts\n[5 specific testable facts]
+Keep it rigorous and appropriate for B.Tech/M.Sc physics students.`;
+      const text=await callClaude([{role:'user',content:`Generate educational summary for: ${module.title}\nTopics: ${module.topics.join(', ')}\nExisting: ${module.summary}`}],sys,2000);
+      setAiSummary(text);
+    }catch(e){setAiSummary(e.message==='NO_KEY'?'⚠ Enter your API key to generate AI notes.':'Could not generate — check connection.');}
+    setSummaryLoading(false);
+  };
+
+  const runAssessment=async()=>{
+    if(!answer.trim())return;
+    setAssessing(true);
+    try{
+      const sys=`You are a strict physics examiner at PDEU. Grade this answer and respond ONLY in JSON:
+{"pass":boolean,"score":number,"grade":"A/B/C/D/F","feedback":"2-3 sentences","strong":"what they did well","missing":"key concept missed or null","hint":"study tip if failed or null"}
+Pass threshold: score >= 60. Be rigorous but fair.`;
+      const text=await callClaude([{role:'user',content:`Question: ${module.assessQ}\n\nStudent Answer: ${answer}`}],sys,800);
+      const parsed=JSON.parse(text.replace(/```json|```/g,'').trim());
+      setResult(parsed);
+      if(parsed.pass&&!isCompleted)onComplete(module.id,module.xp);
+    }catch(e){
+      if(e.message==='NO_KEY')setResult({pass:false,score:0,grade:'F',feedback:'Please enter your API key to use AI grading.',strong:null,missing:null,hint:null});
+      else setResult({pass:false,score:0,grade:'F',feedback:'Grading error — try again.',strong:null,missing:null,hint:null});
+    }
+    setAssessing(false);
+  };
+
+  const askDeepDive=async()=>{
+    if(!deepDiveQ.trim())return;
+    setDeepDiveLoading(true);
+    try{
+      const sys=`You are NeutronMind — expert tutor for ${module.title}. Answer the student's deep-dive question with rigor. Use **bold** for key terms, include equations if relevant. Keep it under 300 words but be thorough. End with a follow-up question.`;
+      const text=await callClaude([{role:'user',content:deepDiveQ}],sys,1200);
+      setDeepDiveA(text);
+    }catch(e){setDeepDiveA(e.message==='NO_KEY'?'⚠ Enter your API key to use Deep Dive.':'Error — please try again.');}
+    setDeepDiveLoading(false);
+  };
+
+  const tierColor=TIER_COLORS[module.tier];
+
+  return (
+    <div style={{minHeight:'100vh',background:'var(--bg)',animation:'fadeIn 0.3s ease'}}>
+      <div style={{background:'linear-gradient(180deg, var(--bg1) 0%, var(--bg) 100%)',borderBottom:'1px solid var(--b1)'}}>
+        <div style={{maxWidth:1200,margin:'0 auto',padding:'20px 28px'}}>
+          <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:6,color:'var(--t2)',fontSize:13,background:'none',border:'none',cursor:'pointer',marginBottom:18,transition:'color 0.2s'}}
+            onMouseEnter={e=>e.currentTarget.style.color='var(--t1)'} onMouseLeave={e=>e.currentTarget.style.color='var(--t2)'}>
+            <Icons.chev_l size={16}/> Back to Learning Path
+          </button>
+          <div style={{display:'flex',alignItems:'flex-start',gap:20,flexWrap:'wrap'}}>
+            <div style={{fontSize:52,lineHeight:1}}>{module.emoji}</div>
+            <div style={{flex:1,minWidth:280}}>
+              <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:10}}>
+                <span className="badge" style={{background:`${tierColor}18`,color:tierColor,border:`1px solid ${tierColor}30`}}>TIER {module.tier} — {TIER_LABELS[module.tier]}</span>
+                <span className="badge" style={{background:'rgba(251,191,36,0.12)',color:'var(--w)',border:'1px solid rgba(251,191,36,0.25)'}}>+{module.xp} XP</span>
+                {isCompleted&&<span className="badge" style={{background:'rgba(52,211,153,0.12)',color:'var(--s)',border:'1px solid rgba(52,211,153,0.25)'}}>✓ COMPLETED</span>}
+              </div>
+              <h1 style={{fontFamily:'var(--font-display)',fontSize:28,fontWeight:900,letterSpacing:'0.02em',marginBottom:8}}>{module.title}</h1>
+              <p style={{fontSize:15,color:'var(--t2)',lineHeight:1.5}}>{module.desc}</p>
+              <div style={{display:'flex',gap:8,marginTop:12,flexWrap:'wrap'}}>
+                {module.topics.map(t=><span key={t} style={{fontSize:11,color:'var(--t2)',background:'var(--b1)',padding:'3px 10px',borderRadius:99,fontFamily:'var(--font-mono)'}}>{t}</span>)}
+              </div>
+            </div>
+            <div style={{display:'flex',gap:10,flexShrink:0}}>
+              {[{v:module.mins,l:'MINUTES'},{v:module.ytVideos.length,l:'VIDEOS'}].map(({v,l})=>(
+                <div key={l} style={{textAlign:'center',padding:'10px 18px',background:'var(--card2)',borderRadius:12,border:'1px solid var(--b1)'}}>
+                  <p style={{fontSize:20,fontWeight:800}}>{v}</p>
+                  <p style={{fontSize:10,color:'var(--t3)',fontFamily:'var(--font-mono)'}}>{l}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="tab-bar" style={{marginTop:24}}>
+            {[['learn','📚 Learn'],['videos','▶ Videos'],['assess','🎯 Assessment'],['deepdive','🔬 Deep Dive']].map(([id,label])=>(
+              <button key={id} className={`tab-item${tab===id?' active':''}`} onClick={()=>setTab(id)}>{label}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={{maxWidth:1200,margin:'0 auto',padding:'28px 28px 80px'}}>
+        {/* LEARN TAB */}
+        {tab==='learn'&&(
+          <div style={{display:'grid',gridTemplateColumns:'1fr 340px',gap:24}}>
+            <div style={{display:'flex',flexDirection:'column',gap:20}}>
+              <div className="card" style={{padding:24}}>
+                <h2 style={{fontFamily:'var(--font-display)',fontSize:16,fontWeight:700,marginBottom:14,color:'var(--p2)'}}>📖 Overview</h2>
+                <p style={{fontSize:14,lineHeight:1.8,color:'var(--t2)'}}>{module.summary}</p>
+              </div>
+              <div className="card" style={{padding:24}}>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
+                  <h2 style={{fontFamily:'var(--font-display)',fontSize:16,fontWeight:700,color:'var(--p2)'}}>✨ AI-Enhanced Study Notes</h2>
+                  <button className="btn-primary" style={{padding:'8px 16px',fontSize:12}} onClick={generateSummary} disabled={summaryLoading}>
+                    <Icons.spark size={13} c="#fff"/> {summaryLoading?'Generating...':aiSummary?'Regenerate':'Generate Notes'}
+                  </button>
+                </div>
+                {summaryLoading&&<div style={{padding:'40px 0',textAlign:'center',color:'var(--t3)'}}>
+                  <div style={{display:'flex',justifyContent:'center',gap:6,marginBottom:12}}>{[0,160,320].map(d=><span key={d} className="dot" style={{animationDelay:`${d}ms`}}/>)}</div>
+                  <p style={{fontSize:13}}>NeutronMind is crafting your study notes…</p>
+                </div>}
+                {aiSummary&&!summaryLoading&&(
+                  <div style={{fontSize:13,lineHeight:1.8,color:'var(--t2)'}}>
+                    {aiSummary.split('\n').map((line,i)=>{
+                      if(line.startsWith('## '))return<h3 key={i} style={{fontFamily:'var(--font-display)',fontSize:14,fontWeight:700,color:'var(--p2)',margin:'16px 0 8px'}}>{line.replace('## ','')}</h3>;
+                      if(line.startsWith('- '))return<div key={i} style={{display:'flex',gap:8,marginBottom:6}}><span style={{color:'var(--p)',flexShrink:0,marginTop:2}}>→</span><span dangerouslySetInnerHTML={{__html:line.slice(2).replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--p2)">$1</strong>')}}/></div>;
+                      if(line.trim())return<p key={i} style={{marginBottom:8}} dangerouslySetInnerHTML={{__html:line.replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--p2)">$1</strong>')}}/>;
+                      return<br key={i}/>;
+                    })}
+                  </div>
+                )}
+                {!aiSummary&&!summaryLoading&&<div style={{padding:'32px 0',textAlign:'center',color:'var(--t3)',fontSize:13}}>
+                  <Icons.spark size={28} c="var(--p)"/>
+                  <p style={{marginTop:12}}>Click "Generate Notes" for AI-crafted, exam-ready study material.</p>
+                </div>}
+              </div>
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:16}}>
+              <div className="card" style={{padding:20}}>
+                <h3 style={{fontFamily:'var(--font-display)',fontSize:13,fontWeight:700,color:'var(--w)',marginBottom:14,letterSpacing:'0.06em'}}>⚡ KEY FACTS</h3>
+                <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                  {module.keyFacts.map((f,i)=>(
+                    <div key={i} style={{display:'flex',gap:10,padding:'8px 10px',background:'rgba(251,191,36,0.05)',borderRadius:8,border:'1px solid rgba(251,191,36,0.12)'}}>
+                      <span style={{fontSize:10,fontWeight:800,color:'var(--w)',fontFamily:'var(--font-mono)',flexShrink:0,marginTop:1}}>0{i+1}</span>
+                      <span style={{fontSize:12,color:'var(--t2)',lineHeight:1.5}}>{f}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="card" style={{padding:20,display:'flex',flexDirection:'column',gap:10}}>
+                <h3 style={{fontFamily:'var(--font-display)',fontSize:13,fontWeight:700,color:'var(--t1)',marginBottom:4,letterSpacing:'0.06em'}}>🎯 NEXT STEPS</h3>
+                <button className="btn-secondary" style={{width:'100%',justifyContent:'flex-start',gap:10}} onClick={()=>setTab('videos')}><Icons.yt size={14} c="var(--r)"/> Watch {module.ytVideos.length} Videos</button>
+                <button className="btn-secondary" style={{width:'100%',justifyContent:'flex-start',gap:10}} onClick={()=>{setTab('learn');generateSummary();}}><Icons.spark size={14} c="var(--p)"/> Generate Study Notes</button>
+                <button className="btn-primary" style={{width:'100%'}} onClick={()=>setTab('assess')}><Icons.zap size={14} c="#fff"/> Take Assessment (+{module.xp} XP)</button>
+              </div>
+              {module.prereqs.length>0&&<div className="card" style={{padding:20}}>
+                <h3 style={{fontFamily:'var(--font-display)',fontSize:13,fontWeight:700,color:'var(--t1)',marginBottom:12,letterSpacing:'0.06em'}}>🔗 PREREQUISITES</h3>
+                {module.prereqs.map(pid=>{const pm=MODULES.find(m=>m.id===pid);return pm?(<div key={pid} style={{display:'flex',gap:8,alignItems:'center',marginBottom:8}}><span>{pm.emoji}</span><span style={{fontSize:12,color:'var(--t2)'}}>{pm.title}</span></div>):null;})}
+              </div>}
+            </div>
+          </div>
+        )}
+
+        {/* VIDEOS TAB */}
+        {tab==='videos'&&(
+          <div style={{display:'grid',gridTemplateColumns:'1fr 300px',gap:24}}>
+            <div>
+              <div className="card" style={{padding:20}}>
+                <div className="yt-wrap" style={{marginBottom:16}}>
+                  <iframe src={`https://www.youtube.com/embed/${module.ytVideos[activeVideo].id}?rel=0&modestbranding=1`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen title={module.ytVideos[activeVideo].title}/>
+                </div>
+                <h3 style={{fontSize:16,fontWeight:700,marginBottom:4}}>{module.ytVideos[activeVideo].title}</h3>
+                <div style={{display:'flex',alignItems:'center',gap:8}}>
+                  <span className="badge" style={{background:'rgba(248,113,113,0.12)',color:'var(--r)',border:'1px solid rgba(248,113,113,0.2)',fontSize:11}}><Icons.yt size={12} c="var(--r)"/> {module.ytVideos[activeVideo].channel}</span>
+                  <a href={`https://www.youtube.com/watch?v=${module.ytVideos[activeVideo].id}`} target="_blank" rel="noopener noreferrer"><button className="btn-secondary" style={{padding:'5px 12px',fontSize:11}}>Open on YouTube ↗</button></a>
+                </div>
+              </div>
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              <h3 style={{fontFamily:'var(--font-display)',fontSize:13,fontWeight:700,color:'var(--t1)',letterSpacing:'0.06em'}}>PLAYLIST ({module.ytVideos.length})</h3>
+              {module.ytVideos.map((v,i)=>(
+                <button key={v.id} onClick={()=>setActiveVideo(i)}
+                  style={{display:'flex',gap:12,padding:'12px 14px',borderRadius:12,border:`1px solid ${i===activeVideo?'var(--p)':'var(--b1)'}`,background:i===activeVideo?'var(--gp)':'rgba(255,255,255,0.02)',cursor:'pointer',textAlign:'left',transition:'all 0.2s'}}
+                  onMouseEnter={e=>{if(i!==activeVideo)e.currentTarget.style.borderColor='var(--b2)'}}
+                  onMouseLeave={e=>{if(i!==activeVideo)e.currentTarget.style.borderColor='var(--b1)'}}>
+                  <div style={{width:36,height:36,borderRadius:8,background:i===activeVideo?'linear-gradient(135deg,var(--p),#6366f1)':'var(--bg2)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><Icons.play size={14} c="#fff"/></div>
+                  <div><p style={{fontSize:12,fontWeight:600,color:'var(--t1)',lineHeight:1.4}}>{v.title}</p><p style={{fontSize:10,color:'var(--t3)',marginTop:3,fontFamily:'var(--font-mono)'}}>{v.channel}</p></div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ASSESSMENT TAB */}
+        {tab==='assess'&&(
+          <div style={{maxWidth:780,margin:'0 auto'}}>
+            <div className="card" style={{padding:28}}>
+              <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20}}>
+                <div style={{width:44,height:44,borderRadius:12,background:'linear-gradient(135deg,var(--p),#6366f1)',display:'flex',alignItems:'center',justifyContent:'center'}}><Icons.target size={22} c="#fff"/></div>
+                <div>
+                  <h2 style={{fontFamily:'var(--font-display)',fontSize:18,fontWeight:700}}>Module Assessment</h2>
+                  <p style={{fontSize:12,color:'var(--t2)',fontFamily:'var(--font-mono)'}}>AI-graded · Earn {module.xp} XP on pass (score ≥ 60%)</p>
+                </div>
+              </div>
+              <div style={{padding:18,background:'rgba(129,140,248,0.06)',borderRadius:12,border:'1px solid var(--b2)',marginBottom:20}}>
+                <p style={{fontSize:11,fontWeight:700,color:'var(--p2)',letterSpacing:'0.08em',marginBottom:8}}>QUESTION</p>
+                <p style={{fontSize:15,fontWeight:600,color:'var(--t1)',lineHeight:1.6}}>{module.assessQ}</p>
+              </div>
+              {!result&&<>
+                <textarea className="ta" value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="Write a comprehensive answer. Include relevant equations, physical arguments, and observational evidence where applicable." style={{minHeight:160,marginBottom:14}}/>
+                <div style={{display:'flex',gap:10}}>
+                  <button className="btn-secondary" onClick={()=>setAnswer('')} style={{flex:1}}>Clear</button>
+                  <button className="btn-primary" onClick={runAssessment} disabled={assessing||!answer.trim()} style={{flex:2}}>
+                    {assessing?<><span className="dot" style={{marginRight:8}}/>AI Grading...</>:<><Icons.zap size={14} c="#fff"/>Submit for AI Grading</>}
+                  </button>
+                </div>
+              </>}
+              {result&&<div style={{display:'flex',flexDirection:'column',gap:14,animation:'fadeInUp 0.3s ease'}}>
+                <div style={{padding:20,borderRadius:14,background:result.pass?'rgba(52,211,153,0.08)':'rgba(248,113,113,0.08)',border:`1px solid ${result.pass?'rgba(52,211,153,0.25)':'rgba(248,113,113,0.25)'}`}}>
+                  <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:12}}>
+                    <div style={{fontSize:36}}>{result.pass?'🎉':'📚'}</div>
+                    <div>
+                      <p style={{fontSize:22,fontWeight:900,fontFamily:'var(--font-display)',color:result.pass?'var(--s)':'var(--r)'}}>{result.score}/100 — Grade {result.grade}</p>
+                      <p style={{fontSize:12,color:'var(--t2)',marginTop:2}}>{result.pass?`✓ Passed! +${module.xp} XP earned`:'Not yet — keep studying!'}</p>
+                    </div>
+                  </div>
+                  <p style={{fontSize:13,color:'var(--t2)',lineHeight:1.6,marginBottom:10}}>{result.feedback}</p>
+                  {result.strong&&<div style={{padding:'8px 12px',background:'rgba(52,211,153,0.1)',borderRadius:8,marginBottom:8}}><p style={{fontSize:12,color:'var(--s)'}}>✓ Strong: {result.strong}</p></div>}
+                  {result.missing&&<div style={{padding:'8px 12px',background:'rgba(248,113,113,0.1)',borderRadius:8,marginBottom:8}}><p style={{fontSize:12,color:'var(--r)'}}>⚠ Missing: {result.missing}</p></div>}
+                  {result.hint&&<div style={{padding:'8px 12px',background:'rgba(251,191,36,0.1)',borderRadius:8}}><p style={{fontSize:12,color:'var(--w)'}}>💡 Tip: {result.hint}</p></div>}
+                </div>
+                <div style={{display:'flex',gap:10}}>
+                  {!result.pass&&<button className="btn-secondary" onClick={()=>{setResult(null);setAnswer('');}} style={{flex:1}}>Try Again</button>}
+                  <button className="btn-primary" onClick={onBack} style={{flex:1}}>{result.pass?'→ Back to Learning Path':'→ Study More'}</button>
+                </div>
+              </div>}
+            </div>
+          </div>
+        )}
+
+        {/* DEEP DIVE TAB */}
+        {tab==='deepdive'&&(
+          <div style={{display:'grid',gridTemplateColumns:'1fr 320px',gap:24}}>
+            <div className="card" style={{padding:24}}>
+              <h2 style={{fontFamily:'var(--font-display)',fontSize:16,fontWeight:700,marginBottom:6,color:'var(--p2)'}}>🔬 Deep Dive — Ask NeutronMind</h2>
+              <p style={{fontSize:13,color:'var(--t2)',marginBottom:20}}>Ask any question about {module.title}. Go as deep as you want.</p>
+              <textarea className="ta" value={deepDiveQ} onChange={e=>setDeepDiveQ(e.target.value)} placeholder={`E.g. "How exactly does the TOV equation constrain the maximum mass?"`} style={{minHeight:100,marginBottom:12}}/>
+              <button className="btn-primary" onClick={askDeepDive} disabled={deepDiveLoading||!deepDiveQ.trim()}>
+                {deepDiveLoading?'Thinking...':<><Icons.atom size={14} c="#fff"/>Ask NeutronMind</>}
+              </button>
+              {deepDiveA&&<div style={{marginTop:20,padding:18,background:'rgba(129,140,248,0.06)',borderRadius:12,border:'1px solid var(--b1)',fontSize:13,lineHeight:1.8,color:'var(--t2)',animation:'fadeInUp 0.3s ease'}}>
+                <div style={{display:'flex',gap:8,marginBottom:12}}>
+                  <div style={{width:24,height:24,borderRadius:6,background:'rgba(129,140,248,0.2)',display:'flex',alignItems:'center',justifyContent:'center'}}><Icons.spark size={12} c="var(--p2)"/></div>
+                  <p style={{fontSize:12,fontWeight:700,color:'var(--p2)'}}>NeutronMind</p>
+                </div>
+                <MD text={deepDiveA}/>
+              </div>}
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              <h3 style={{fontFamily:'var(--font-display)',fontSize:13,fontWeight:700,color:'var(--t1)',letterSpacing:'0.06em'}}>💡 SUGGESTED QUESTIONS</h3>
+              {[`What is the most important equation for understanding ${module.title.toLowerCase()}?`,`How is ${module.title.toLowerCase()} studied observationally?`,`What are the biggest unsolved problems related to ${module.title.toLowerCase()}?`,'Give me a real-world example that best illustrates the concepts here.','What would happen at the extreme limits — push the physics to the breaking point.'].map((q,i)=>(
+                <button key={i} onClick={()=>setDeepDiveQ(q)}
+                  style={{padding:'10px 14px',background:'rgba(255,255,255,0.02)',border:'1px solid var(--b1)',borderRadius:10,textAlign:'left',cursor:'pointer',fontSize:12,color:'var(--t2)',transition:'all 0.2s',lineHeight:1.5}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--p)';e.currentTarget.style.color='var(--t1)'}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--b1)';e.currentTarget.style.color='var(--t2)'}}>
+                  {q}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ─── LEARNING PATH DASHBOARD ─── */
+const LearningPathDash = ({ completedNodes, currentXP, onOpenModule }) => {
+  const tiers=[1,2,3,4];
+  const getStatus=node=>{
+    if(completedNodes.includes(node.id))return 'done';
+    if(node.prereqs.every(p=>completedNodes.includes(p)))return 'available';
+    return 'locked';
+  };
+  const totalXP=MODULES.reduce((a,m)=>a+m.xp,0);
+  return (
+    <div style={{display:'grid',gridTemplateColumns:'1fr 340px',gap:28}}>
+      <div style={{display:'flex',flexDirection:'column',gap:24}}>
+        <div className="card" style={{padding:22,background:'linear-gradient(135deg,rgba(129,140,248,0.1),rgba(52,211,153,0.06))',borderColor:'var(--b2)'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
+            <div>
+              <p style={{fontFamily:'var(--font-display)',fontSize:20,fontWeight:900,letterSpacing:'0.02em'}}>Your Journey Through Extreme Physics</p>
+              <p style={{fontSize:13,color:'var(--t2)',marginTop:4}}>Complete modules, earn XP, unlock the next tier.</p>
+            </div>
+            <div style={{textAlign:'right',flexShrink:0}}>
+              <p style={{fontFamily:'var(--font-mono)',fontSize:24,fontWeight:700,color:'var(--p2)'}}>{currentXP}<span style={{fontSize:12,color:'var(--t3)',marginLeft:4}}>/ {totalXP} XP</span></p>
+              <p style={{fontSize:11,color:'var(--t3)',fontFamily:'var(--font-mono)'}}>{completedNodes.length}/9 modules complete</p>
+            </div>
+          </div>
+          <div className="progress-track"><div className="progress-fill" style={{width:`${(currentXP/totalXP)*100}%`,background:'linear-gradient(90deg,var(--p),var(--s))'}}/></div>
+        </div>
+        {tiers.map(tier=>{
+          const tierNodes=MODULES.filter(m=>m.tier===tier);
+          const tierColor=TIER_COLORS[tier];
+          const doneCount=tierNodes.filter(m=>completedNodes.includes(m.id)).length;
+          return (<div key={tier}>
+            <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:12}}>
+              <div style={{height:2,flex:1,background:`linear-gradient(90deg, ${tierColor}40, transparent)`,borderRadius:1}}/>
+              <span className="badge" style={{background:`${tierColor}12`,color:tierColor,border:`1px solid ${tierColor}25`}}>TIER {tier} · {TIER_LABELS[tier]} · {doneCount}/{tierNodes.length}</span>
+              <div style={{height:2,flex:1,background:`linear-gradient(90deg, transparent, ${tierColor}40)`,borderRadius:1}}/>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+              {tierNodes.map(node=>{
+                const status=getStatus(node);
+                return (<div key={node.id} onClick={()=>status!=='locked'&&onOpenModule(node)} className="card hover-card"
+                  style={{padding:18,cursor:status==='locked'?'not-allowed':'pointer',opacity:status==='locked'?0.4:1,borderColor:status==='done'?'rgba(52,211,153,0.3)':status==='available'?'var(--b2)':'var(--b1)',background:status==='done'?'rgba(52,211,153,0.05)':'var(--card)'}}>
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:10}}>
+                    <span style={{fontSize:28}}>{node.emoji}</span>
+                    <div style={{display:'flex',gap:5,alignItems:'center'}}>
+                      {status==='done'&&<span style={{fontSize:16,color:'var(--s)'}}>✓</span>}
+                      {status==='locked'&&<Icons.lock size={14} c="var(--t3)"/>}
+                      {status==='available'&&<span style={{fontSize:10,fontFamily:'var(--font-mono)',color:'var(--p2)',fontWeight:700}}>+{node.xp} XP</span>}
+                    </div>
+                  </div>
+                  <p style={{fontSize:14,fontWeight:700,color:status==='done'?'var(--s)':'var(--t1)',marginBottom:5,lineHeight:1.3}}>{node.title}</p>
+                  <p style={{fontSize:11,color:'var(--t3)',lineHeight:1.5,marginBottom:10}}>{node.desc}</p>
+                  <div style={{display:'flex',gap:6,justifyContent:'space-between',alignItems:'center'}}>
+                    <span style={{fontSize:10,fontFamily:'var(--font-mono)',color:'var(--t3)'}}>{node.mins} min · {node.ytVideos.length} videos</span>
+                    {status==='available'&&<button className="btn-primary" style={{padding:'5px 12px',fontSize:11}} onClick={e=>{e.stopPropagation();onOpenModule(node);}}>Start →</button>}
+                    {status==='done'&&<span style={{fontSize:11,color:'var(--s)',fontFamily:'var(--font-mono)'}}>Complete ✓</span>}
+                    {status==='locked'&&<span style={{fontSize:10,color:'var(--t3)'}}>Locked</span>}
+                  </div>
+                </div>);
+              })}
+            </div>
+          </div>);
+        })}
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:16}}>
+        <div className="card" style={{padding:20,background:'linear-gradient(135deg,rgba(129,140,248,0.09),rgba(52,211,153,0.05))',borderColor:'var(--b2)'}}>
+          <div style={{textAlign:'center',marginBottom:16}}>
+            <div style={{fontSize:42,marginBottom:8,animation:'float-up 3s ease-in-out infinite'}}>🌌</div>
+            <p style={{fontFamily:'var(--font-display)',fontSize:15,fontWeight:800,letterSpacing:'0.04em'}}>NEUTRON STAR EXPLORER</p>
+            <p style={{fontSize:12,color:'var(--t2)',marginTop:4}}>Your personalized journey through the most extreme physics in the universe</p>
+          </div>
+          <div style={{display:'flex',flexDirection:'column',gap:8}}>
+            {[['📺','Watch curated YouTube videos per module'],['✨','Get AI-generated study notes tailored to your level'],['🎯','Pass AI-graded assessments to earn XP'],['🔬','Deep dive Q&A with NeutronMind'],['🏆','Earn PDEU certificate on completion']].map(([icon,text])=>(
+              <div key={text} style={{display:'flex',gap:10,alignItems:'center'}}><span style={{fontSize:16,flexShrink:0}}>{icon}</span><span style={{fontSize:12,color:'var(--t2)',lineHeight:1.4}}>{text}</span></div>
+            ))}
+          </div>
+        </div>
+        {(()=>{const next=MODULES.find(m=>!completedNodes.includes(m.id)&&m.prereqs.every(p=>completedNodes.includes(p)));return next?(<div className="card" style={{padding:18,borderColor:'var(--p)',cursor:'pointer',transition:'all 0.2s'}} onClick={()=>onOpenModule(next)}
+          onMouseEnter={e=>e.currentTarget.style.boxShadow='0 0 24px var(--gp)'} onMouseLeave={e=>e.currentTarget.style.boxShadow='none'}>
+          <p style={{fontSize:10,fontWeight:700,color:'var(--p)',letterSpacing:'0.1em',marginBottom:10}}>▶ RECOMMENDED NEXT</p>
+          <div style={{display:'flex',gap:12,alignItems:'center'}}><span style={{fontSize:28}}>{next.emoji}</span><div><p style={{fontSize:13,fontWeight:700}}>{next.title}</p><p style={{fontSize:11,color:'var(--t3)',marginTop:2}}>{next.mins} min · +{next.xp} XP</p></div></div>
+        </div>):null;})()}
+        <div className="card" style={{padding:18,textAlign:'center',background:completedNodes.length===9?'linear-gradient(135deg,rgba(251,191,36,0.1),rgba(129,140,248,0.08))':'var(--card)',borderColor:completedNodes.length===9?'rgba(251,191,36,0.3)':'var(--b1)'}}>
+          <Icons.award size={32} c={completedNodes.length===9?'var(--w)':'var(--t3)'}/>
+          <p style={{fontSize:13,fontWeight:700,marginTop:10,color:completedNodes.length===9?'var(--w)':'var(--t2)'}}>PDEU Certificate</p>
+          <p style={{fontSize:11,color:'var(--t3)',marginTop:5,lineHeight:1.5}}>{completedNodes.length===9?'All modules complete! 🎉':`Complete all 9 modules to earn your certificate. ${9-completedNodes.length} remaining.`}</p>
+          <div className="progress-track" style={{margin:'12px 0'}}><div className="progress-fill" style={{width:`${(completedNodes.length/9)*100}%`,background:'linear-gradient(90deg,var(--w),var(--p))'}}/></div>
+          {completedNodes.length===9&&<button className="btn-primary" style={{width:'100%'}}>Generate Certificate</button>}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ─── PHYSICS SANDBOX ─── */
+const PhysicsSandbox = () => {
+  const [mode,setMode]=useState('ns');
+  const [params,setParams]=useState({mass:1.4,radius:11.9,spin:30,bField:1e12});
+  const [derived,setDerived]=useState({});
+  const [stability,setStability]=useState({ok:true,msg:''});
+  const [cls,setCls]=useState({type:'🌟 Neutron Star',color:'#a5b4fc',glow:'rgba(165,180,252,0.3)'});
+  const [selectedReal,setSelectedReal]=useState(null);
+  const [ligoEvent,setLigoEvent]=useState('GW170817');
+  const canvasRef=useRef(null);
+  const animRef=useRef(null);
+
+  useEffect(()=>{
+    const{mass,radius,spin,bField}=params;
+    setDerived({
+      compactness:phys.compactness(mass,radius),
+      gSurface:phys.g_surface(mass,radius),
+      vEsc:phys.v_esc(mass,radius)*100,
+      kepler:phys.kepler(mass,radius),
+      rs:phys.rs(mass),
+      density:(mass*1.989e30)/((4/3)*Math.PI*Math.pow(radius*1000,3)),
+      lum:phys.lum_sd(spin,bField,radius),
+    });
+    setStability(phys.stable(mass,radius));
+    setCls(phys.classify(mass,radius,spin,bField));
+  },[params]);
+
+  useEffect(()=>{
+    const canvas=canvasRef.current; if(!canvas)return;
+    const ctx=canvas.getContext('2d');
+    cancelAnimationFrame(animRef.current);
+    const draw=(t)=>{
+      const W=canvas.width,H=canvas.height;
+      ctx.clearRect(0,0,W,H);
+      const bg=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W*0.7);
+      bg.addColorStop(0,'#0a0a1e');bg.addColorStop(1,'#020208');
+      ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+      for(let i=0;i<100;i++){
+        const x=(Math.sin(i*137.508*Math.PI/180)*0.5+0.5)*W;
+        const y=(Math.cos(i*137.508*Math.PI/180)*0.5+0.5)*H;
+        const alpha=0.4+Math.sin(t*0.0005+i)*0.4;
+        ctx.globalAlpha=alpha*0.8;ctx.fillStyle='#fff';
+        ctx.beginPath();ctx.arc(x,y,i%11===0?1.5:0.7,0,Math.PI*2);ctx.fill();
+      }
+      ctx.globalAlpha=1;
+      if(mode==='ns')drawNS(ctx,W,H,t);
+      else if(mode==='merger')drawMerger(ctx,W,H,t);
+      else if(mode==='jet')drawJet(ctx,W,H,t);
+      animRef.current=requestAnimationFrame(draw);
+    };
+    animRef.current=requestAnimationFrame(draw);
+    return()=>cancelAnimationFrame(animRef.current);
+  },[params,derived,stability,cls,mode]);
+
+  const drawNS=(ctx,W,H,t)=>{
+    const cx=W/2,cy=H/2;
+    if(!stability.ok){
+      const rp=60;
+      const bh=ctx.createRadialGradient(cx,cy,0,cx,cy,rp*3);
+      bh.addColorStop(0,'#000');bh.addColorStop(0.35,'#000');bh.addColorStop(0.6,'rgba(255,80,0,0.5)');bh.addColorStop(1,'transparent');
+      ctx.fillStyle=bh;ctx.beginPath();ctx.arc(cx,cy,rp*3,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#ff6000';ctx.font='bold 13px monospace';ctx.textAlign='center';ctx.fillText('⚫ BLACK HOLE',cx,cy+rp*3.5);
+      return;
+    }
+    const col=cls.color||'#a5b4fc';
+    const nsR=Math.max(18,Math.min(H*0.3,params.radius*3.5));
+    const bNorm=Math.min(Math.log10(Math.max(params.bField,1))/15,1);
+    const pulse=1+Math.sin(t*0.0015)*0.012;
+    if(bNorm>0.35){ctx.save();for(let i=0;i<12;i++){const angle=(i/12)*Math.PI*2;ctx.strokeStyle=`rgba(96,165,250,${bNorm*0.18})`;ctx.lineWidth=1;ctx.beginPath();const r1=nsR*1.25,r2=nsR*(2.2+bNorm*2.5);ctx.moveTo(cx+Math.cos(angle)*r1,cy+Math.sin(angle)*r1);ctx.quadraticCurveTo(cx+Math.cos(angle+Math.PI/3)*r2*0.65,cy+Math.sin(angle+Math.PI/3)*r2*0.65,cx+Math.cos(angle+Math.PI*2/3)*r1,cy+Math.sin(angle+Math.PI*2/3)*r1);ctx.stroke();}ctx.restore();}
+    if(params.spin>1){const bAngle=(t*0.002*Math.sqrt(params.spin)*0.08)%(Math.PI*2);const bAlpha=Math.min(0.15+params.spin/500,0.75);for(const side of[0,Math.PI]){const grad=ctx.createLinearGradient(cx,cy,cx+Math.cos(bAngle+side)*W,cy+Math.sin(bAngle+side)*H);grad.addColorStop(0,`rgba(255,220,100,${bAlpha})`);grad.addColorStop(0.25,`rgba(255,200,50,${bAlpha*0.4})`);grad.addColorStop(1,'transparent');ctx.save();ctx.translate(cx,cy);ctx.rotate(bAngle+side);ctx.fillStyle=grad;ctx.globalAlpha=bAlpha*0.55;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(W,-nsR*0.25);ctx.lineTo(W,nsR*0.25);ctx.closePath();ctx.fill();ctx.restore();ctx.globalAlpha=1;}}
+    const glowR=ctx.createRadialGradient(cx,cy,nsR*0.7,cx,cy,nsR*2.2);glowR.addColorStop(0,col+'28');glowR.addColorStop(1,'transparent');ctx.fillStyle=glowR;ctx.beginPath();ctx.arc(cx,cy,nsR*2.2,0,Math.PI*2);ctx.fill();
+    const bodyGrad=ctx.createRadialGradient(cx-nsR*0.28,cy-nsR*0.28,0,cx,cy,nsR*pulse);bodyGrad.addColorStop(0,'#ffffff');bodyGrad.addColorStop(0.15,'#f0f0ff');bodyGrad.addColorStop(0.4,col);bodyGrad.addColorStop(0.8,col+'bb');bodyGrad.addColorStop(1,col+'33');ctx.fillStyle=bodyGrad;ctx.beginPath();ctx.arc(cx,cy,nsR*pulse,0,Math.PI*2);ctx.fill();
+    const rsPixels=phys.rs(params.mass)/params.radius*nsR*0.85;if(rsPixels>4){ctx.strokeStyle='rgba(248,113,113,0.4)';ctx.lineWidth=1;ctx.setLineDash([3,4]);ctx.beginPath();ctx.arc(cx,cy,rsPixels,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);}
+    ctx.fillStyle='#fff';ctx.font='bold 12px monospace';ctx.textAlign='center';ctx.globalAlpha=0.9;ctx.fillText(cls.type||'Neutron Star',cx,cy+nsR*pulse+20);ctx.globalAlpha=1;
+  };
+  const drawMerger=(ctx,W,H,t)=>{
+    const nWaves=6;for(let i=0;i<nWaves;i++){const phase=(t*0.0008+i/nWaves)%1;const wR=phase*Math.min(W,H)*0.6;const wAlpha=(1-phase)*0.25;ctx.strokeStyle=`rgba(129,140,248,${wAlpha})`;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(W/2,H/2,wR,0,Math.PI*2);ctx.stroke();}
+    const speed=Math.min(t*0.0001+0.5,3);const angle=t*0.001*speed;const sep=Math.max(20,80-t*0.004);const c1x=W/2+Math.cos(angle)*sep,c1y=H/2+Math.sin(angle)*sep*0.4;const c2x=W/2-Math.cos(angle)*sep,c2y=H/2-Math.sin(angle)*sep*0.4;
+    const ld=ctx.createLinearGradient(c1x,c1y,c2x,c2y);ld.addColorStop(0,'rgba(165,180,252,0.12)');ld.addColorStop(0.5,'rgba(129,140,248,0.25)');ld.addColorStop(1,'rgba(165,180,252,0.12)');ctx.strokeStyle=ld;ctx.lineWidth=sep*0.6;ctx.beginPath();ctx.moveTo(c1x,c1y);ctx.lineTo(c2x,c2y);ctx.stroke();
+    [{cx:c1x,cy:c1y,col:'#a5b4fc'},{cx:c2x,cy:c2y,col:'#6ee7b7'}].forEach(({cx:px,cy:py,col})=>{const r=16;const g=ctx.createRadialGradient(px,py,0,px,py,r);g.addColorStop(0,'#fff');g.addColorStop(0.3,col);g.addColorStop(1,col+'44');ctx.fillStyle=g;ctx.beginPath();ctx.arc(px,py,r,0,Math.PI*2);ctx.fill();});
+    ctx.fillStyle='#a5b4fc';ctx.font='bold 11px monospace';ctx.textAlign='left';ctx.fillText(`GW: ${(100+t*0.002).toFixed(0)} Hz sweep`,16,H-30);ctx.fillText('Chirp mass: 1.188 M☉',16,H-14);
+  };
+  const drawJet=(ctx,W,H,t)=>{
+    const cx=W/2,cy=H/2,nsR=22;
+    ctx.save();ctx.scale(1,0.22);ctx.translate(0,cy*(1/0.22-1));for(let i=12;i>=1;i--){const diskR=nsR+i*11;const temp=1-i/13;const col=`rgba(${Math.round(255*temp)},${Math.round(140*temp*0.5)},${Math.round(30*temp*0.1)},${0.6-i*0.04})`;ctx.strokeStyle=col;ctx.lineWidth=5-i*0.25;ctx.beginPath();ctx.arc(cx,cy*(1/0.22),diskR,0,Math.PI*2);ctx.stroke();}ctx.restore();
+    const jetAlpha=0.6+Math.sin(t*0.003)*0.25;for(const dir of[-1,1]){const jetH=H*0.42;const jetGrad=ctx.createLinearGradient(cx,cy,cx,cy+dir*jetH);jetGrad.addColorStop(0,`rgba(129,140,248,${jetAlpha})`);jetGrad.addColorStop(0.4,`rgba(96,165,250,${jetAlpha*0.5})`);jetGrad.addColorStop(1,'transparent');ctx.fillStyle=jetGrad;ctx.globalAlpha=0.7;ctx.save();ctx.beginPath();ctx.moveTo(cx,cy+dir*nsR);ctx.lineTo(cx-30,cy+dir*jetH);ctx.lineTo(cx+30,cy+dir*jetH);ctx.closePath();ctx.fill();ctx.restore();ctx.globalAlpha=1;}
+    const bodyGrad=ctx.createRadialGradient(cx-7,cy-7,0,cx,cy,nsR);bodyGrad.addColorStop(0,'#fff');bodyGrad.addColorStop(0.3,'#a5b4fc');bodyGrad.addColorStop(1,'#6366f144');ctx.fillStyle=bodyGrad;ctx.beginPath();ctx.arc(cx,cy,nsR,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 11px monospace';ctx.textAlign='center';ctx.fillText('📡 X-RAY BINARY JET',cx,cy+nsR*2.2+20);
+  };
+
+  const fmtN=(n,d=2)=>{if(Math.abs(n)>=1e9)return`${(n/1e9).toFixed(d)}G`;if(Math.abs(n)>=1e6)return`${(n/1e6).toFixed(d)}M`;if(Math.abs(n)>=1e3)return`${(n/1e3).toFixed(d)}k`;return n.toFixed(d);};
+  const metrics=[
+    {label:'Surface gravity',val:`${((derived.gSurface||0)/9.8e11).toFixed(2)}×10¹¹ g⊕`,sub:'Newtonian + GR correction'},
+    {label:'Escape velocity',val:`${(derived.vEsc||0).toFixed(1)}% c`,sub:'Fraction of light speed'},
+    {label:'Compactness Rs/R',val:(derived.compactness||0).toFixed(4),sub:'GR compactness parameter'},
+    {label:'Kepler limit',val:`${fmtN(derived.kepler||0)} Hz`,sub:'Mass-shedding frequency'},
+    {label:'Schwarzschild R',val:`${(derived.rs||0).toFixed(2)} km`,sub:'Gravitational radius'},
+    {label:'Mean density',val:`${((derived.density||0)/1e17).toFixed(2)}×10¹⁷ kg/m³`,sub:'Nuclear density ratio'},
+  ];
+
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:24}}>
+      <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+        {[['ns','🌟','Neutron Star'],['merger','💫','NS Merger / GW'],['jet','⚡','Relativistic Jet']].map(([id,em,label])=>(
+          <button key={id} onClick={()=>setMode(id)} className={`btn-${mode===id?'primary':'secondary'}`}>{em} {label}</button>
+        ))}
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'280px 1fr',gap:20}}>
+        <div className="card" style={{padding:20,display:'flex',flexDirection:'column',gap:18}}>
+          {mode==='ns'&&<>
+            {[{key:'mass',label:'Mass',unit:'M☉',min:0.5,max:3.0,step:0.05,dec:2},{key:'radius',label:'Radius',unit:'km',min:8,max:25,step:0.5,dec:1},{key:'spin',label:'Spin rate',unit:'Hz',min:0,max:716,step:1,dec:0}].map(({key,label,unit,min,max,step,dec})=>(
+              <div key={key}>
+                <div style={{display:'flex',justifyContent:'space-between',marginBottom:7}}><span style={{fontSize:12,fontWeight:600,color:'var(--t2)'}}>{label}</span><span style={{fontSize:12,fontFamily:'var(--font-mono)',color:'var(--p2)',fontWeight:700}}>{params[key].toFixed(dec)} {unit}</span></div>
+                <input type="range" min={min} max={max} step={step} value={params[key]} onChange={e=>setParams(p=>({...p,[key]:parseFloat(e.target.value)}))}/>
+              </div>
+            ))}
+            <div>
+              <div style={{display:'flex',justifyContent:'space-between',marginBottom:7}}><span style={{fontSize:12,fontWeight:600,color:'var(--t2)'}}>Magnetic field</span><span style={{fontSize:12,fontFamily:'var(--font-mono)',color:'var(--p2)',fontWeight:700}}>10<sup>{Math.round(Math.log10(params.bField))}</sup> T</span></div>
+              <input type="range" min={6} max={15} step={0.5} value={Math.log10(params.bField)} onChange={e=>setParams(p=>({...p,bField:Math.pow(10,parseFloat(e.target.value))}))}/>
+            </div>
+            <div style={{padding:12,borderRadius:10,border:`1px solid ${(cls.color||'#fff')+'30'}`,background:(cls.color||'#fff')+'0e'}}>
+              <div style={{display:'flex',alignItems:'center',gap:8}}>
+                <div style={{width:8,height:8,borderRadius:'50%',background:cls.color,boxShadow:`0 0 8px ${cls.glow}`}}/>
+                <span style={{fontSize:13,fontWeight:700,color:cls.color}}>{cls.type}</span>
+              </div>
+            </div>
+            {!stability.ok&&<div style={{padding:10,background:'rgba(248,113,113,0.1)',border:'1px solid rgba(248,113,113,0.25)',borderRadius:10}}><p style={{fontSize:11,color:'var(--r)'}}>{stability.msg}</p></div>}
+            <button className="btn-secondary" style={{fontSize:11}} onClick={()=>setParams({mass:1.4,radius:11.9,spin:30,bField:1e12})}><Icons.refresh size={12}/> Reset to default</button>
+          </>}
+          {mode==='merger'&&<div style={{display:'flex',flexDirection:'column',gap:14}}>
+            <p style={{fontFamily:'var(--font-display)',fontSize:13,fontWeight:700,color:'var(--p2)'}}>LIGO EVENT DATA</p>
+            {Object.entries(LIGO_DATA).map(([key,ev])=>(
+              <button key={key} onClick={()=>setLigoEvent(key)} style={{padding:'10px 12px',borderRadius:10,border:`1px solid ${ligoEvent===key?'var(--p)':'var(--b1)'}`,background:ligoEvent===key?'var(--gp)':'rgba(255,255,255,0.02)',cursor:'pointer',textAlign:'left'}}>
+                <p style={{fontSize:12,fontWeight:700,color:'var(--t1)',marginBottom:3}}>{key}</p>
+                <p style={{fontSize:10,color:'var(--t3)',lineHeight:1.5}}>{ev.desc.slice(0,80)}…</p>
+              </button>
+            ))}
+            {LIGO_DATA[ligoEvent]&&<div style={{padding:12,background:'rgba(129,140,248,0.06)',borderRadius:10,border:'1px solid var(--b1)'}}>
+              <p style={{fontSize:11,fontWeight:700,color:'var(--p2)',marginBottom:8}}>MEASURED PARAMETERS</p>
+              {[['Chirp mass',`${LIGO_DATA[ligoEvent].chirp} M☉`],['Total mass',`${LIGO_DATA[ligoEvent].total} M☉`],['Distance',`${LIGO_DATA[ligoEvent].dist} Mpc`],...(LIGO_DATA[ligoEvent].H0?[['H₀',`${LIGO_DATA[ligoEvent].H0} km/s/Mpc`]]:[]),...(LIGO_DATA[ligoEvent].tidal?[['Tidal Λ',`< ${LIGO_DATA[ligoEvent].tidal}`]]:[])].map(([k,v])=>(
+                <div key={k} style={{display:'flex',justifyContent:'space-between',marginBottom:5}}><span style={{fontSize:11,color:'var(--t3)'}}>{k}</span><span style={{fontSize:11,fontFamily:'var(--font-mono)',color:'var(--t1)'}}>{v}</span></div>
+              ))}
+            </div>}
+          </div>}
+          {mode==='jet'&&<div style={{display:'flex',flexDirection:'column',gap:14}}>
+            <p style={{fontFamily:'var(--font-display)',fontSize:13,fontWeight:700,color:'var(--p2)'}}>JET PARAMETERS</p>
+            {[{key:'mass',label:'NS Mass',unit:'M☉',min:1.0,max:2.5,step:0.05,dec:2},{key:'spin',label:'Spin',unit:'Hz',min:1,max:716,step:1,dec:0}].map(({key,label,unit,min,max,step,dec})=>(
+              <div key={key}>
+                <div style={{display:'flex',justifyContent:'space-between',marginBottom:7}}><span style={{fontSize:12,color:'var(--t2)',fontWeight:600}}>{label}</span><span style={{fontSize:12,fontFamily:'var(--font-mono)',color:'var(--p2)',fontWeight:700}}>{params[key].toFixed(dec)} {unit}</span></div>
+                <input type="range" min={min} max={max} step={step} value={params[key]} onChange={e=>setParams(p=>({...p,[key]:parseFloat(e.target.value)}))}/>
+              </div>
+            ))}
+            <div style={{padding:10,background:'rgba(96,165,250,0.06)',borderRadius:10,border:'1px solid rgba(96,165,250,0.15)'}}><p style={{fontSize:11,color:'var(--t2)',lineHeight:1.6}}>Showing: Magnetically-driven relativistic jets from an accreting neutron star. Knots = plasma blobs ejected at ~0.1c.</p></div>
+          </div>}
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:0}}>
+          <canvas ref={canvasRef} width={520} height={310} style={{width:'100%',aspectRatio:'520/310',background:'#020208',borderRadius:'16px 16px 0 0',display:'block'}}/>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(3, 1fr)',border:'1px solid var(--b1)',borderTop:'none',borderRadius:'0 0 16px 16px',overflow:'hidden'}}>
+            {metrics.map(({label,val,sub},i)=>(
+              <div key={label} className="metric-box" style={{padding:'12px 14px',borderRight:i%3!==2?'1px solid var(--b1)':'none',borderBottom:i<3?'1px solid var(--b1)':'none'}}>
+                <p style={{fontSize:10,color:'var(--t3)'}}>{label}</p>
+                <p style={{fontSize:13,fontFamily:'var(--font-mono)',fontWeight:700,marginTop:3}}>{val}</p>
+                <p style={{fontSize:9,color:'var(--t3)',marginTop:2}}>{sub}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="card" style={{padding:22}}>
+        <h3 style={{fontFamily:'var(--font-display)',fontSize:14,fontWeight:700,marginBottom:16,letterSpacing:'0.04em'}}>📡 REAL NEUTRON STAR ENCYCLOPEDIA</h3>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill, minmax(240px, 1fr))',gap:12}}>
+          {REAL_NS_DATA.map(ns=>(
+            <button key={ns.name} onClick={()=>{setParams({mass:ns.mass,radius:ns.radius,spin:ns.spin,bField:ns.b});setMode('ns');setSelectedReal(ns);}}
+              style={{padding:'12px 14px',borderRadius:12,border:`1px solid ${selectedReal?.name===ns.name?'var(--p)':'var(--b1)'}`,background:selectedReal?.name===ns.name?'var(--gp)':'rgba(255,255,255,0.02)',cursor:'pointer',textAlign:'left',transition:'all 0.2s'}}
+              onMouseEnter={e=>{if(selectedReal?.name!==ns.name)e.currentTarget.style.borderColor='var(--b2)'}}
+              onMouseLeave={e=>{if(selectedReal?.name!==ns.name)e.currentTarget.style.borderColor='var(--b1)'}}>
+              <p style={{fontSize:12,fontWeight:700,color:'var(--t1)',marginBottom:4,lineHeight:1.3}}>{ns.name}</p>
+              <p style={{fontSize:10,color:'var(--t3)',marginBottom:8,lineHeight:1.5}}>{ns.note}</p>
+              <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+                {[[`${ns.mass}M☉`,'var(--p2)'],[`${ns.spin}Hz`,'var(--s)'],[`${ns.dist}`,'var(--w)']].map(([v,c])=>(
+                  <span key={v} style={{fontSize:9,fontFamily:'var(--font-mono)',color:c,background:c+'12',padding:'2px 7px',borderRadius:99}}>{v}</span>
+                ))}
+              </div>
+            </button>
+          ))}
+        </div>
+        {selectedReal&&<div style={{marginTop:16,padding:14,background:'rgba(129,140,248,0.06)',borderRadius:12,border:'1px solid var(--b1)',animation:'fadeIn 0.3s ease'}}>
+          <p style={{fontSize:13,fontWeight:700,color:'var(--p2)',marginBottom:4}}>{selectedReal.name}</p>
+          <p style={{fontSize:12,color:'var(--t2)'}}>Discovered: {selectedReal.year} · Distance: {selectedReal.dist} · {selectedReal.note}</p>
+          <p style={{fontSize:11,color:'var(--t3)',marginTop:4,fontFamily:'var(--font-mono)'}}>Params loaded into simulator ↑</p>
+        </div>}
+      </div>
+      <div style={{padding:'10px 16px',background:'rgba(255,255,255,0.02)',borderRadius:12,border:'1px solid var(--b1)',display:'flex',alignItems:'center',gap:8}}>
+        <Icons.info size={13} c="var(--t3)"/>
+        <p style={{fontSize:11,color:'var(--t3)',fontFamily:'var(--font-mono)'}}>Simulation uses TOV approximations + Newtonian-GR corrections. Real NS physics from NICER/LIGO public data.</p>
+      </div>
+    </div>
+  );
+};
+
+/* ─── EXAM FORGE ─── */
+const ExamForge = () => {
+  const [step,setStep]=useState(1);
+  const [college,setCollege]=useState(null);
+  const [customSyllabus,setCustomSyllabus]=useState('');
+  const [customPaper,setCustomPaper]=useState(null);
+  const [customPaperText,setCustomPaperText]=useState('');
+  const [config,setConfig]=useState({topics:[],difficulty:'mixed',focus:'theory',year:new Date().getFullYear(),semester:'Even'});
+  const [paper,setPaper]=useState('');
+  const [generating,setGenerating]=useState(false);
+  const [analyzing,setAnalyzing]=useState(false);
+  const fileRef=useRef(null);
+  const ALL_TOPICS=['Neutron star formation & structure','Pulsar physics & timing','Magnetars & extreme fields','Equation of state','Gravitational waves & GW170817','X-ray binaries & accretion','TOV equation & stability','Dark matter & NS','Nuclear matter physics','Observational techniques (NICER, LIGO)'];
+  const toggleTopic=t=>setConfig(c=>({...c,topics:c.topics.includes(t)?c.topics.filter(x=>x!==t):[...c.topics,t]}));
+  const analyzePaper=async(text)=>{
+    setAnalyzing(true);
+    try{
+      const sys=`You are an expert academic. Analyze this university exam paper and return JSON only:
+{"questionTypes":[{"type":"MCQ/Short/Long/Numerical","count":1,"marks":1}],"majorTopics":["topic"],"pattern":"Brief description","totalMarks":70,"duration":"3h","style":"theory-heavy"}`;
+      const text2=await callClaude([{role:'user',content:`Analyze exam paper pattern:\n\n${text.slice(0,3000)}`}],sys,800);
+      setCustomPaperText(JSON.stringify(JSON.parse(text2.replace(/```json|```/g,'').trim()),null,2));
+    }catch{setCustomPaperText('Analysis failed — will use college default pattern.');}
+    setAnalyzing(false);
+  };
+  const generatePaper=async()=>{
+    setGenerating(true);
+    const syllabusInfo=college?.short==='CUSTOM'?customSyllabus:college?.syllabus||'';
+    const topicsList=config.topics.length>0?config.topics:ALL_TOPICS;
+    try{
+      const sys=`You are an expert physics professor at ${college?.name||'a Gujarat university'}. Generate a realistic high-quality university examination paper for neutron star astrophysics.
+CRITICAL: Follow EXACTLY the exam pattern: ${syllabusInfo}
+Topics: ${topicsList.join(', ')}. Difficulty: ${config.difficulty}. Focus: ${config.focus}. Year: ${config.year}-${config.year+1}, ${config.semester} Semester.
+${customPaperText?`Analyzed paper pattern: ${customPaperText}`:''}
+Generate: proper header, all sections, question numbering, marks allocation, choice options, mix of conceptual/derivation/numerical. Make it feel like a real Gujarat university paper.`;
+      const text=await callClaude([{role:'user',content:`Generate complete neutron star physics exam for ${college?.name}. Topics: ${topicsList.join(', ')}. Year: ${config.year}.`}],sys,3000);
+      setPaper(text); setStep(4);
+    }catch(e){setPaper(e.message==='NO_KEY'?'⚠ Enter your API key to generate question papers.':'Generation failed — please try again.');setStep(4);}
+    setGenerating(false);
+  };
+  const downloadPaper=()=>{const blob=new Blob([paper],{type:'text/plain'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`${college?.short||'exam'}_neutron_star_paper_${config.year}.txt`;a.click();URL.revokeObjectURL(url);};
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:24}}>
+      <div className="card" style={{padding:24,background:'linear-gradient(135deg,rgba(244,114,182,0.07),rgba(129,140,248,0.07))',borderColor:'rgba(244,114,182,0.2)'}}>
+        <div style={{display:'flex',gap:16,alignItems:'center',flexWrap:'wrap'}}>
+          <div style={{fontSize:48}}>📋</div>
+          <div>
+            <h2 style={{fontFamily:'var(--font-display)',fontSize:22,fontWeight:900,letterSpacing:'0.03em'}}>ExamForge</h2>
+            <p style={{fontSize:14,color:'var(--t2)',marginTop:4}}>AI-generated question papers tailored to your Gujarat college's exact exam pattern</p>
+          </div>
+          <div style={{marginLeft:'auto',display:'flex',gap:8}}>
+            {[1,2,3].map(s=><div key={s} style={{width:32,height:32,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:700,background:step>=s?'linear-gradient(135deg,var(--p),#6366f1)':'var(--bg2)',color:step>=s?'#fff':'var(--t3)',border:`1px solid ${step>=s?'transparent':'var(--b1)'}`,transition:'all 0.3s'}}>{s}</div>)}
+          </div>
+        </div>
+      </div>
+      {step===1&&<div style={{animation:'fadeInUp 0.3s ease'}}>
+        <h3 style={{fontFamily:'var(--font-display)',fontSize:16,fontWeight:700,marginBottom:16,letterSpacing:'0.04em'}}>SELECT YOUR INSTITUTION</h3>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))',gap:12}}>
+          {GUJARAT_COLLEGES.map(c=>(
+            <button key={c.short} onClick={()=>{setCollege(c);setStep(2);}}
+              style={{padding:'16px 18px',borderRadius:14,border:`1px solid ${college?.short===c.short?'var(--p)':'var(--b1)'}`,background:college?.short===c.short?'var(--gp)':'rgba(255,255,255,0.02)',cursor:'pointer',textAlign:'left',transition:'all 0.2s'}}
+              onMouseEnter={e=>e.currentTarget.style.borderColor='var(--b2)'} onMouseLeave={e=>e.currentTarget.style.borderColor=college?.short===c.short?'var(--p)':'var(--b1)'}>
+              <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}><span style={{fontFamily:'var(--font-display)',fontSize:13,fontWeight:800,color:'var(--p2)',letterSpacing:'0.06em'}}>{c.short}</span><span style={{fontSize:10,color:'var(--t3)',background:'rgba(255,255,255,0.05)',padding:'2px 7px',borderRadius:99}}>{c.city}</span></div>
+              <p style={{fontSize:13,fontWeight:600,color:'var(--t1)',marginBottom:5,lineHeight:1.3}}>{c.name}</p>
+              {c.syllabus&&<p style={{fontSize:10,color:'var(--t3)',lineHeight:1.5}}>{c.syllabus.slice(0,90)}…</p>}
+            </button>
+          ))}
+        </div>
+      </div>}
+      {step===2&&college&&<div style={{display:'grid',gridTemplateColumns:'1fr 360px',gap:24,animation:'fadeInUp 0.3s ease'}}>
+        <div style={{display:'flex',flexDirection:'column',gap:20}}>
+          <div className="card" style={{padding:18}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:10}}>
+              <div><span style={{fontFamily:'var(--font-display)',fontSize:12,fontWeight:800,color:'var(--p2)',letterSpacing:'0.06em'}}>{college.short}</span><p style={{fontSize:14,fontWeight:700,color:'var(--t1)',marginTop:2}}>{college.name}</p></div>
+              <button className="btn-secondary" style={{padding:'5px 12px',fontSize:11}} onClick={()=>setStep(1)}>Change</button>
+            </div>
+            {college.short!=='CUSTOM'&&<p style={{fontSize:12,color:'var(--t3)',lineHeight:1.6,padding:'10px 12px',background:'rgba(255,255,255,0.02)',borderRadius:8}}>{college.syllabus}</p>}
+            {college.short==='CUSTOM'&&<textarea className="ta" value={customSyllabus} onChange={e=>setCustomSyllabus(e.target.value)} placeholder="Describe your college's exam pattern: marks, sections, question types, duration..." style={{minHeight:100,marginTop:10}}/>}
+          </div>
+          <div className="card" style={{padding:20}}>
+            <p style={{fontFamily:'var(--font-display)',fontSize:13,fontWeight:700,marginBottom:14,letterSpacing:'0.05em'}}>SELECT TOPICS <span style={{fontSize:10,color:'var(--t3)',fontWeight:400}}>(leave empty = all)</span></p>
+            <div style={{display:'flex',flexWrap:'wrap',gap:8}}>
+              {ALL_TOPICS.map(t=>(
+                <button key={t} onClick={()=>toggleTopic(t)} className="pill" style={{cursor:'pointer',background:config.topics.includes(t)?'linear-gradient(135deg,var(--p),#6366f1)':'rgba(255,255,255,0.04)',color:config.topics.includes(t)?'#fff':'var(--t2)',border:`1px solid ${config.topics.includes(t)?'transparent':'var(--b1)'}`,padding:'6px 12px',fontSize:12,transition:'all 0.2s'}}>{t}</button>
+              ))}
+            </div>
+          </div>
+          <div className="card" style={{padding:20}}>
+            <p style={{fontFamily:'var(--font-display)',fontSize:13,fontWeight:700,marginBottom:14,letterSpacing:'0.05em'}}>PAPER SETTINGS</p>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
+              <div>
+                <p style={{fontSize:11,color:'var(--t3)',marginBottom:7}}>DIFFICULTY</p>
+                {[['easy','🟢 Easy'],['mixed','🟡 Mixed (Recommended)'],['hard','🔴 Hard / Research-level']].map(([v,l])=>(
+                  <label key={v} style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',fontSize:12,color:config.difficulty===v?'var(--t1)':'var(--t2)',marginBottom:6}}><input type="radio" name="diff" value={v} checked={config.difficulty===v} onChange={()=>setConfig(c=>({...c,difficulty:v}))} style={{accentColor:'var(--p)'}}/> {l}</label>
+                ))}
+              </div>
+              <div>
+                <p style={{fontSize:11,color:'var(--t3)',marginBottom:7}}>FOCUS</p>
+                {[['theory','📖 Theory-heavy'],['numerical','🔢 Numerical-heavy'],['derivation','∂ Derivation-heavy'],['balanced','⚖ Balanced']].map(([v,l])=>(
+                  <label key={v} style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',fontSize:12,color:config.focus===v?'var(--t1)':'var(--t2)',marginBottom:6}}><input type="radio" name="focus" value={v} checked={config.focus===v} onChange={()=>setConfig(c=>({...c,focus:v}))} style={{accentColor:'var(--p)'}}/> {l}</label>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          <div className="card" style={{padding:20}}>
+            <h3 style={{fontFamily:'var(--font-display)',fontSize:13,fontWeight:700,marginBottom:8,letterSpacing:'0.05em'}}>📎 UPLOAD PREVIOUS PAPER</h3>
+            <p style={{fontSize:12,color:'var(--t3)',marginBottom:12,lineHeight:1.5}}>Upload your college's actual previous paper — AI will analyze the pattern and replicate it precisely.</p>
+            <button className="btn-secondary" style={{width:'100%',marginBottom:10}} onClick={()=>fileRef.current?.click()}><Icons.upload size={14}/> Upload Paper (.txt)</button>
+            <input ref={fileRef} type="file" accept=".txt" style={{display:'none'}} onChange={async e=>{const file=e.target.files[0];if(!file)return;const text=await file.text();setCustomPaper(file);await analyzePaper(text);}}/>
+            {analyzing&&<p style={{fontSize:12,color:'var(--p2)',textAlign:'center'}}>🔍 Analyzing paper pattern…</p>}
+            {customPaper&&!analyzing&&<p style={{fontSize:11,color:'var(--s)',marginTop:8}}>✓ {customPaper.name} analyzed</p>}
+          </div>
+          <div className="card" style={{padding:20}}>
+            <h3 style={{fontFamily:'var(--font-display)',fontSize:13,fontWeight:700,marginBottom:14,letterSpacing:'0.05em'}}>PAPER SUMMARY</h3>
+            {[['Institution',college.name],['Topics',config.topics.length>0?`${config.topics.length} selected`:'All topics'],['Difficulty',config.difficulty],['Focus',config.focus]].map(([k,v])=>(
+              <div key={k} style={{display:'flex',justifyContent:'space-between',marginBottom:8,gap:8}}><span style={{fontSize:11,color:'var(--t3)'}}>{k}</span><span style={{fontSize:11,fontFamily:'var(--font-mono)',color:'var(--t1)',textAlign:'right'}}>{v}</span></div>
+            ))}
+          </div>
+          <button className="btn-primary" style={{width:'100%',padding:'14px',fontSize:14}} onClick={generatePaper} disabled={generating}>
+            {generating?<><span className="dot" style={{marginRight:8}}/>Generating Paper…</>:<><Icons.spark size={16} c="#fff"/>Generate Question Paper</>}
+          </button>
+        </div>
+      </div>}
+      {step===4&&<div style={{animation:'fadeInUp 0.3s ease'}}>
+        <div style={{display:'flex',gap:12,marginBottom:20,flexWrap:'wrap',alignItems:'center'}}>
+          <h3 style={{fontFamily:'var(--font-display)',fontSize:18,fontWeight:700,flex:1}}>Generated Paper: {college?.name}</h3>
+          <button className="btn-secondary" onClick={()=>setStep(2)}><Icons.refresh size={14}/>Regenerate</button>
+          <button className="btn-primary" onClick={downloadPaper}><Icons.download size={14} c="#fff"/>Download .txt</button>
+        </div>
+        <div className="card" style={{padding:28}}><pre style={{whiteSpace:'pre-wrap',fontSize:13,lineHeight:1.9,color:'var(--t2)',fontFamily:'var(--font-mono)'}}>{paper}</pre></div>
+      </div>}
+    </div>
+  );
+};
+
+/* ─── PROFILE PAGE ─── */
+const ProfilePage = ({ completedNodes, currentXP }) => {
+  const totalXP=MODULES.reduce((a,m)=>a+m.xp,0);
+  const level=currentXP>800?'Expert':currentXP>400?'Advanced':currentXP>100?'Intermediate':'Beginner';
+  const lc={Expert:'var(--s)',Advanced:'var(--p2)',Intermediate:'var(--a)',Beginner:'var(--t2)'}[level];
+  return (
+    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:24}}>
+      <div style={{display:'flex',flexDirection:'column',gap:16}}>
+        <div className="card" style={{padding:24,background:'linear-gradient(135deg,rgba(129,140,248,0.09),rgba(52,211,153,0.05))',borderColor:'var(--b2)'}}>
+          <div style={{display:'flex',gap:16,alignItems:'center',marginBottom:20}}>
+            <div style={{width:60,height:60,borderRadius:16,background:'linear-gradient(135deg,var(--p),var(--s))',display:'flex',alignItems:'center',justifyContent:'center'}}><Icons.user size={28} c="#fff"/></div>
+            <div><p style={{fontFamily:'var(--font-display)',fontSize:18,fontWeight:900}}>Explorer</p><span className="badge" style={{background:lc+'15',color:lc,border:`1px solid ${lc}30`,marginTop:6,display:'inline-flex'}}>{level}</span></div>
+          </div>
+          {[['Learning XP',`${currentXP} / ${totalXP}`,`${Math.round((currentXP/totalXP)*100)}%`,'var(--p)'],['Modules Complete',`${completedNodes.length} / 9`,`${Math.round((completedNodes.length/9)*100)}%`,'var(--s)']].map(([label,val,pct,col])=>(
+            <div key={label} style={{marginBottom:14}}>
+              <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}><span style={{fontSize:12,color:'var(--t2)'}}>{label}</span><span style={{fontSize:12,fontFamily:'var(--font-mono)',color:col,fontWeight:700}}>{val}</span></div>
+              <div className="progress-track"><div className="progress-fill" style={{width:pct,background:`linear-gradient(90deg,${col},${col}88)`}}/></div>
+            </div>
+          ))}
+        </div>
+        <div className="card" style={{padding:20}}>
+          <h3 style={{fontFamily:'var(--font-display)',fontSize:13,fontWeight:700,marginBottom:14,letterSpacing:'0.05em'}}>ACHIEVEMENTS</h3>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+            {[['Total XP',currentXP,'var(--p)'],['Modules',`${completedNodes.length}/9`,'var(--s)'],['Level',level,lc],['Tier',completedNodes.length>=7?4:completedNodes.length>=4?3:completedNodes.length>=2?2:1,'var(--w)']].map(([label,val,col])=>(
+              <div key={label} style={{padding:'12px 14px',background:'rgba(255,255,255,0.02)',borderRadius:12,border:'1px solid var(--b1)',textAlign:'center'}}>
+                <p style={{fontFamily:'var(--font-mono)',fontSize:18,fontWeight:800,color:col}}>{val}</p>
+                <p style={{fontSize:10,color:'var(--t3)',marginTop:4}}>{label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="card" style={{padding:20}}>
+        <h3 style={{fontFamily:'var(--font-display)',fontSize:14,fontWeight:700,marginBottom:16,letterSpacing:'0.04em'}}>COMPLETED MODULES</h3>
+        {completedNodes.length===0?(<div style={{textAlign:'center',padding:'40px 0',color:'var(--t3)'}}>
+          <div style={{fontSize:40,marginBottom:12}}>🌌</div>
+          <p style={{fontSize:13}}>No modules complete yet.</p>
+          <p style={{fontSize:11,marginTop:6}}>Head to Learning Path to begin!</p>
+        </div>):(
+          <div style={{display:'flex',flexDirection:'column',gap:8,maxHeight:400,overflowY:'auto'}}>
+            {completedNodes.map(id=>{const m=MODULES.find(x=>x.id===id);if(!m)return null;return(
+              <div key={id} style={{display:'flex',gap:12,alignItems:'center',padding:'11px 14px',background:'rgba(52,211,153,0.05)',border:'1px solid rgba(52,211,153,0.18)',borderRadius:12}}>
+                <span style={{fontSize:22}}>{m.emoji}</span>
+                <div style={{flex:1}}><p style={{fontSize:13,fontWeight:600}}>{m.title}</p><p style={{fontSize:10,color:'var(--t3)',fontFamily:'var(--font-mono)',marginTop:2}}>+{m.xp} XP · Tier {m.tier}</p></div>
+                <Icons.check size={16} c="var(--s)"/>
+              </div>
+            );})}
+          </div>
+        )}
+        {completedNodes.length===MODULES.length&&<div style={{marginTop:16,padding:18,background:'linear-gradient(135deg,rgba(251,191,36,0.1),rgba(129,140,248,0.08))',border:'1px solid rgba(251,191,36,0.25)',borderRadius:14,textAlign:'center'}}>
+          <Icons.award size={36} c="var(--w)"/>
+          <p style={{fontSize:15,fontWeight:800,marginTop:10}}>All modules complete! 🎉</p>
+          <button className="btn-primary" style={{width:'100%',marginTop:12}}>Generate PDEU Certificate</button>
+        </div>}
+      </div>
+    </div>
+  );
+};
+
+/* ─── MAIN DASHBOARD ─── */
+const TABS=[
+  {id:'learn',label:'Learning Path',icon:Icons.brain,sub:'9 modules'},
+  {id:'sandbox',label:'Physics Lab',icon:Icons.flask,sub:'3 sims + data'},
+  {id:'examforge',label:'ExamForge',icon:Icons.file,sub:'Gujarat colleges'},
+  {id:'profile',label:'Profile',icon:Icons.user,sub:'Progress'},
+];
+
+function Dashboard() {
+  const [apiKeySet,setApiKeySet]=useState(false);
+  const [activeTab,setActiveTab]=useState('learn');
+  const [openModule,setOpenModule]=useState(null);
+  const [completedNodes,setCompletedNodes]=useState([]);
+  const [currentXP,setCurrentXP]=useState(0);
+
+  const handleComplete=(id,xp)=>{setCompletedNodes(p=>p.includes(id)?p:[...p,id]);setCurrentXP(p=>p+xp);};
+  const totalXP=MODULES.reduce((a,m)=>a+m.xp,0);
+  const level=currentXP>800?'Expert':currentXP>400?'Advanced':currentXP>100?'Intermediate':'Beginner';
+
+  if(!apiKeySet)return <ApiKeyModal onSet={k=>{if(k!=='DEMO')setApiKey(k);setApiKeySet(true);}}/>;
+
+  return <>
+    <style>{`@keyframes float-up{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}`}</style>
+    <StarField/>
+    <div className="scanline"/>
+    <div style={{position:'relative',zIndex:1,minHeight:'100vh'}}>
+      {openModule&&<div style={{position:'fixed',inset:0,zIndex:200,background:'var(--bg)',overflowY:'auto',animation:'fadeIn 0.25s ease'}}>
+        <ModulePage module={openModule} onBack={()=>setOpenModule(null)} onComplete={handleComplete} isCompleted={completedNodes.includes(openModule.id)} xpEarned={currentXP}/>
+      </div>}
+      <header style={{position:'sticky',top:0,zIndex:100,borderBottom:'1px solid var(--b1)',background:'rgba(3,3,15,0.88)',backdropFilter:'blur(20px)'}}>
+        <div style={{maxWidth:1300,margin:'0 auto',padding:'0 28px',height:64,display:'flex',alignItems:'center',gap:20}}>
+          <div style={{display:'flex',alignItems:'center',gap:10}}>
+            <div style={{width:34,height:34,borderRadius:9,background:'linear-gradient(135deg,var(--p),var(--s))',display:'flex',alignItems:'center',justifyContent:'center'}}><Icons.atom size={18} c="#fff"/></div>
+            <span style={{fontFamily:'var(--font-display)',fontSize:15,fontWeight:900,letterSpacing:'0.04em'}}>PDEU <span style={{color:'var(--p2)'}}>Physics</span></span>
+          </div>
+          <div style={{flex:1}}/>
+          <nav style={{display:'flex',gap:2}}>
+            {TABS.map(tab=>(
+              <button key={tab.id} onClick={()=>setActiveTab(tab.id)}
+                style={{display:'flex',alignItems:'center',gap:7,padding:'8px 14px',borderRadius:10,border:'none',background:activeTab===tab.id?'rgba(129,140,248,0.15)':'transparent',color:activeTab===tab.id?'var(--p2)':'var(--t2)',fontSize:13,fontWeight:600,cursor:'pointer',transition:'all 0.2s',fontFamily:'var(--font-body)'}}>
+                <tab.icon size={14} c={activeTab===tab.id?'var(--p2)':'currentColor'}/>
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+          <div style={{display:'flex',alignItems:'center',gap:10}}>
+            <div style={{display:'flex',alignItems:'center',gap:6,padding:'6px 14px',borderRadius:99,background:'rgba(129,140,248,0.1)',border:'1px solid var(--b2)'}}>
+              <Icons.award size={13} c="var(--w)"/>
+              <span style={{fontSize:12,fontFamily:'var(--font-mono)',fontWeight:700,color:'var(--t1)'}}>{currentXP} XP</span>
+              <span style={{fontSize:10,color:'var(--t3)'}}>·</span>
+              <span style={{fontSize:11,color:'var(--t2)'}}>{level}</span>
+            </div>
+            <div style={{width:8,height:8,borderRadius:'50%',background:'var(--s)',boxShadow:'0 0 8px var(--s)'}}/>
+          </div>
+        </div>
+      </header>
+      <main style={{maxWidth:1300,margin:'0 auto',padding:'32px 28px 80px'}}>
+        {activeTab==='learn'&&<div style={{marginBottom:28,animation:'fadeInUp 0.3s ease'}}>
+          <h1 style={{fontFamily:'var(--font-display)',fontSize:30,fontWeight:900,letterSpacing:'0.02em',lineHeight:1.1}}>
+            Welcome back, <span style={{background:'linear-gradient(135deg,var(--p2),var(--s))',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Explorer</span>
+          </h1>
+          <p style={{fontSize:14,color:'var(--t2)',marginTop:6}}>Your personalized neutron star learning universe — videos, AI notes, assessments, and real physics data.</p>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(4, 1fr)',gap:14,marginTop:20}}>
+            {[{icon:Icons.brain,label:'Learning XP',val:currentXP,sub:`/ ${totalXP} total`,c:'var(--p)'},{icon:Icons.book,label:'Modules Done',val:`${completedNodes.length}/9`,sub:'complete for cert',c:'var(--s)'},{icon:Icons.trend,label:'Level',val:level,sub:'based on XP',c:'var(--a)'},{icon:Icons.award,label:'Progress',val:`${Math.round((completedNodes.length/9)*100)}%`,sub:'to certificate',c:'var(--w)'}].map(({icon:Ic,label,val,sub,c})=>(
+              <div key={label} style={{background:'var(--card)',border:'1px solid var(--b1)',borderRadius:16,padding:'16px 18px',display:'flex',gap:12,alignItems:'center',transition:'border-color 0.2s'}}
+                onMouseEnter={e=>e.currentTarget.style.borderColor='var(--b2)'} onMouseLeave={e=>e.currentTarget.style.borderColor='var(--b1)'}>
+                <div style={{width:42,height:42,borderRadius:11,background:c+'15',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><Ic size={20} c={c}/></div>
+                <div><p style={{fontFamily:'var(--font-mono)',fontSize:20,fontWeight:800,color:'var(--t1)',lineHeight:1}}>{val}</p><p style={{fontSize:12,color:'var(--t2)',marginTop:3}}>{label}</p><p style={{fontSize:10,color:'var(--t3)',fontFamily:'var(--font-mono)'}}>{sub}</p></div>
+              </div>
+            ))}
+          </div>
+        </div>}
+        <div key={activeTab} style={{animation:'fadeInUp 0.25s ease'}}>
+          {activeTab==='learn'&&<LearningPathDash completedNodes={completedNodes} currentXP={currentXP} onOpenModule={setOpenModule}/>}
+          {activeTab==='sandbox'&&<PhysicsSandbox/>}
+          {activeTab==='examforge'&&<ExamForge/>}
+          {activeTab==='profile'&&<ProfilePage completedNodes={completedNodes} currentXP={currentXP}/>}
+        </div>
+      </main>
+      <ChatBot/>
+    </div>
+  </>;
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<Dashboard/>);
+</script>
+</body>
+</html>
